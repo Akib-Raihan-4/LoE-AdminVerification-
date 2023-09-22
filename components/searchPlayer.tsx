@@ -27,7 +27,7 @@ const SearchPlayer = () => {
         console.error(existingError);
       } else if (existingData) {
         setIsVerified(existingData.verified);
-        setVerificationStatus(existingData.verified ? 'ID already verified' : 'ID exists');
+        setVerificationStatus(existingData.verified ? 'Verified' : 'ID and TransactionID Matched');
       } else {
         setIsVerified(false);
         setVerificationStatus('ID or Transaction ID does not exist');
@@ -53,7 +53,6 @@ const SearchPlayer = () => {
       } else {
         setSearchPlayerId('');
         setSearchTransactionId('');
-        setVerificationStatus('Verification successful');
         setIsVerified(true);
       }
     } else {
@@ -62,7 +61,7 @@ const SearchPlayer = () => {
   };
 
   return (
-    <div >
+    <div className='flex flex-col gap-6' >
       <input
         type="text"
         placeholder="Enter Player ID"
@@ -77,12 +76,12 @@ const SearchPlayer = () => {
         onChange={(e) => setSearchTransactionId(e.target.value)}
         className="p-2 border border-gray-300 rounded text-black"
       />
-      <button onClick={handleVerification} className="px-4 py-2 ml-4 bg-blue-500 text-white rounded">
+      <button onClick={handleVerification} className="px-4 py-2 bg-blue-500 text-white rounded">
         Verify
       </button>
 
       {verificationStatus && (
-        <p className={verificationStatus.includes('successful') ? 'text-green-500' : 'text-red-500'}>
+        <p className={verificationStatus === 'Verified' ? 'text-green-500' : 'text-red-500'}>
           {verificationStatus}
         </p>
       )}
