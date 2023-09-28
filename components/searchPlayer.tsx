@@ -7,9 +7,10 @@ const SearchPlayer = () => {
   const [searchTransactionId, setSearchTransactionId] = useState('');
   const [verificationStatus, setVerificationStatus] = useState('');
   const [isVerified, setIsVerified] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
-    if (searchPlayerId.length <= 6 || searchTransactionId === '') {
+    if (searchPlayerId === '' || searchTransactionId === '') {
       setVerificationStatus('');
       setIsVerified(false);
       return;
@@ -22,12 +23,14 @@ const SearchPlayer = () => {
         .eq('id', searchPlayerId)
         .eq('transaction', searchTransactionId)
         .single();
-      console.log(existingData)
+
       if (existingError) {
         console.error(existingError);
+        setIsVerified(false);
+        setVerificationStatus('ID does not match');
       } else if (existingData) {
         setIsVerified(existingData.verified);
-        setVerificationStatus(existingData.verified ? 'Verified' : 'ID and TransactionID Matched');
+        setVerificationStatus(existingData.verified ? 'Verified' : 'ID matches');
       } else {
         setIsVerified(false);
         setVerificationStatus('ID or Transaction ID does not exist');
@@ -40,10 +43,10 @@ const SearchPlayer = () => {
   const handleVerification = async () => {
     if (isVerified) {
       setVerificationStatus('ID already verified');
-    } else if (verificationStatus === 'ID exists') {
+    } else if (verificationStatus === 'ID matches') {
       const { error: verError } = await supabase
         .from('formPlayer')
-        .update({ verified: 'TRUE', created: new Date() })
+        .update({ verified: true, created: new Date() })
         .eq('id', searchPlayerId)
         .eq('transaction', searchTransactionId);
 
@@ -54,6 +57,11 @@ const SearchPlayer = () => {
         setSearchPlayerId('');
         setSearchTransactionId('');
         setIsVerified(true);
+        setVerificationStatus('Verified');
+        setShowSuccessMessage(true); 
+        setTimeout(() => {
+          setShowSuccessMessage(false); 
+        }, 3000);
       }
     } else {
       setVerificationStatus('Please enter a valid ID and Transaction ID');
@@ -61,7 +69,7 @@ const SearchPlayer = () => {
   };
 
   return (
-    <div className='flex flex-col gap-6' >
+    <div className='flex flex-col gap-6'>
       <input
         type="text"
         placeholder="Enter Player ID"
@@ -80,7 +88,12 @@ const SearchPlayer = () => {
         Verify
       </button>
 
-      {verificationStatus && (
+      {showSuccessMessage && (<>
+        {console.log(showSuccessMessage)}
+        <p className="text-green-500">Verification successful</p></>
+      )}
+
+      {verificationStatus && !showSuccessMessage && (
         <p className={verificationStatus === 'Verified' ? 'text-green-500' : 'text-red-500'}>
           {verificationStatus}
         </p>
