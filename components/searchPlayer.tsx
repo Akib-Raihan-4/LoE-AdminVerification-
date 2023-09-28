@@ -8,15 +8,49 @@ const SearchPlayer = () => {
   const [verificationStatus, setVerificationStatus] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [playerData, setPlayerData] = useState<any>(null);
+
+  useEffect(() => {
+    if (searchPlayerId === '') {
+      setVerificationStatus('');
+      setIsVerified(false);
+      setPlayerData(null);
+      return;
+    }
+
+    const fetchPlayerInfo = async () => {
+      const { data: existingData, error: existingError } = await supabase
+        .from('formPlayer')
+        .select('name, transaction')
+        .eq('id', searchPlayerId)
+        .single();
+
+      if (existingError) {
+        console.error(existingError);
+        setIsVerified(false);
+        // setVerificationStatus('ID does not match');
+        setPlayerData(null);
+      } else if (existingData) {
+        setIsVerified(false); // Reset verification status
+        // setVerificationStatus('ID matches');
+        setPlayerData(existingData);
+      } else {
+        setIsVerified(false);
+        // setVerificationStatus('ID does not exist');
+        setPlayerData(null);
+      }
+    };
+
+    fetchPlayerInfo();
+  }, [searchPlayerId]);
 
   useEffect(() => {
     if (searchPlayerId === '' || searchTransactionId === '') {
-      setVerificationStatus('');
       setIsVerified(false);
       return;
     }
 
-    const fetchExistingId = async () => {
+    const verifyTransaction = async () => {
       const { data: existingData, error: existingError } = await supabase
         .from('formPlayer')
         .select('id, verified')
@@ -30,20 +64,20 @@ const SearchPlayer = () => {
         setVerificationStatus('ID does not match');
       } else if (existingData) {
         setIsVerified(existingData.verified);
-        setVerificationStatus(existingData.verified ? 'Verified' : 'ID matches');
+        setVerificationStatus(existingData.verified ? 'Verified' : 'ID and Transaction ID match');
       } else {
         setIsVerified(false);
         setVerificationStatus('ID or Transaction ID does not exist');
       }
     };
 
-    fetchExistingId();
+    verifyTransaction();
   }, [searchPlayerId, searchTransactionId]);
 
   const handleVerification = async () => {
     if (isVerified) {
       setVerificationStatus('ID already verified');
-    } else if (verificationStatus === 'ID matches') {
+    } else if (verificationStatus === 'ID and Transaction ID match') {
       const { error: verError } = await supabase
         .from('formPlayer')
         .update({ verified: true, created: new Date() })
@@ -58,9 +92,9 @@ const SearchPlayer = () => {
         setSearchTransactionId('');
         setIsVerified(true);
         setVerificationStatus('Verified');
-        setShowSuccessMessage(true); 
+        setShowSuccessMessage(true);
         setTimeout(() => {
-          setShowSuccessMessage(false); 
+          setShowSuccessMessage(false);
         }, 3000);
       }
     } else {
@@ -84,13 +118,23 @@ const SearchPlayer = () => {
         onChange={(e) => setSearchTransactionId(e.target.value)}
         className="p-2 border border-gray-300 rounded text-black"
       />
+
+      
+
       <button onClick={handleVerification} className="px-4 py-2 bg-blue-500 text-white rounded">
         Verify
       </button>
 
-      {showSuccessMessage && (<>
-        {console.log(showSuccessMessage)}
-        <p className="text-green-500">Verification successful</p></>
+      {playerData && (
+        <div>
+          
+          <p>Player Name: {playerData.name} </p>
+          <p>TransactionID: {playerData.transaction}</p>
+        </div>
+      )}
+
+      {showSuccessMessage && (
+        <p className="text-green-500">Verification successful</p>
       )}
 
       {verificationStatus && !showSuccessMessage && (
