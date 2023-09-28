@@ -17,7 +17,7 @@ const SearchPlayer = () => {
       if (searchPlayerId !== '' && searchPlayerId.length >= 6) {
         const { data: playerData, error: playerError } = await supabase
           .from('formPlayer')
-          .select('name, transaction, verified')
+          .select('name, transaction, verified, id')
           .eq('id', searchPlayerId)
           .single();
 
@@ -30,7 +30,7 @@ const SearchPlayer = () => {
       if (!playerInfo && searchTransactionId !== '' && searchTransactionId.length >= 4) {
         const { data: transactionData, error: transactionError } = await supabase
           .from('formPlayer')
-          .select('name, transaction, verified')
+          .select('name, transaction, verified, id')
           .eq('transaction', searchTransactionId)
           .single();
 
@@ -58,12 +58,12 @@ const SearchPlayer = () => {
       setVerificationStatus('ID already verified');
       setTimeout(() => {
         setVerificationStatus('');
-      }, 3000); // Clear the message after 3 seconds
+      }, 3000); 
     } else if (verificationStatus === 'Verified') {
       setVerificationStatus('ID already verified');
       setTimeout(() => {
         setVerificationStatus('');
-      }, 3000); // Clear the message after 3 seconds
+      }, 3000);
     } else {
       const { data: existingData, error: existingError } = await supabase
         .from('formPlayer')
@@ -80,7 +80,7 @@ const SearchPlayer = () => {
           setVerificationStatus('ID already verified');
           setTimeout(() => {
             setVerificationStatus('');
-          }, 3000); // Clear the message after 3 seconds
+          }, 3000); 
         } else {
           const { error: verError } = await supabase
             .from('formPlayer')
@@ -143,6 +143,7 @@ const SearchPlayer = () => {
       {playerData && (
         <div>
           <p>Player Name: {playerData.name} </p>
+          <p>Player ID: {playerData.id} </p>
           <p>TransactionID: {playerData.transaction}</p>
         </div>
       )}
