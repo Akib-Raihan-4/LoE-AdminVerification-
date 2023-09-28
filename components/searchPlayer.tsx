@@ -11,73 +11,59 @@ const SearchPlayer = () => {
   const [playerData, setPlayerData] = useState<any>(null);
 
   useEffect(() => {
-    if (searchPlayerId === '' && searchTransactionId === '') {
-      setIsVerified(false);
-      return;
-    }
-  
     const fetchPlayerInfo = async () => {
       let playerInfo = null;
-  
-      if (searchPlayerId !== '') {
+
+      if (searchPlayerId !== '' && searchPlayerId.length >= 6) {
         const { data: playerData, error: playerError } = await supabase
           .from('formPlayer')
-          .select('name, transaction, verified, id')
+          .select('name, transaction, verified')
           .eq('id', searchPlayerId)
           .single();
-  
+
         if (!playerError && playerData) {
           setIsVerified(playerData.verified);
           playerInfo = playerData;
         }
       }
-  
-      if (!playerInfo && searchTransactionId !== '') {
+
+      if (!playerInfo && searchTransactionId !== '' && searchTransactionId.length >= 4) {
         const { data: transactionData, error: transactionError } = await supabase
           .from('formPlayer')
-          .select('name, transaction, verified, id')
+          .select('name, transaction, verified')
           .eq('transaction', searchTransactionId)
           .single();
-  
+
         if (!transactionError && transactionData) {
           setIsVerified(transactionData.verified);
           playerInfo = transactionData;
         }
       }
-  
-      if (!playerInfo) {
+
+      if ((!playerInfo || (searchPlayerId.length < 6 && searchTransactionId.length < 4)) ||
+          (searchPlayerId === '' && searchTransactionId === '')) {
         setPlayerData(null);
+        setVerificationStatus('');
       } else {
         setPlayerData(playerInfo);
-      }
-  
-      if (isVerified) {
-        setVerificationStatus('Verified');
-        setTimeout(() => {
-          setVerificationStatus('');
-        }, 3000); // Clear the message after 3 seconds
-      } else if (searchPlayerId === '' && searchTransactionId === '') {
-        setIsVerified(false);
-        setVerificationStatus('');
-        setPlayerData(null);
+        setVerificationStatus(isVerified ? 'Verified' : '');
       }
     };
-  
+
     fetchPlayerInfo();
-  }, [searchPlayerId, searchTransactionId]);
-  
+  }, [searchPlayerId, searchTransactionId, isVerified]);
 
   const handleVerification = async () => {
     if (isVerified) {
       setVerificationStatus('ID already verified');
       setTimeout(() => {
         setVerificationStatus('');
-      }, 3000); 
+      }, 3000); // Clear the message after 3 seconds
     } else if (verificationStatus === 'Verified') {
       setVerificationStatus('ID already verified');
       setTimeout(() => {
         setVerificationStatus('');
-      }, 3000); 
+      }, 3000); // Clear the message after 3 seconds
     } else {
       const { data: existingData, error: existingError } = await supabase
         .from('formPlayer')
@@ -85,7 +71,7 @@ const SearchPlayer = () => {
         .eq('id', searchPlayerId)
         .eq('transaction', searchTransactionId)
         .single();
-  
+
       if (existingError) {
         console.error(existingError);
         setVerificationStatus('Verification failed');
@@ -101,7 +87,7 @@ const SearchPlayer = () => {
             .update({ verified: true, created: new Date() })
             .eq('id', searchPlayerId)
             .eq('transaction', searchTransactionId);
-  
+
           if (verError) {
             console.error(verError);
             setVerificationStatus('Verification failed');
@@ -109,7 +95,7 @@ const SearchPlayer = () => {
             setSearchPlayerId('');
             setSearchTransactionId('');
             setIsVerified(true);
-            setVerificationStatus('');
+            setVerificationStatus('Verified');
             setShowSuccessMessage(true);
             setPlayerData(null);
             setTimeout(() => {
@@ -122,9 +108,15 @@ const SearchPlayer = () => {
       }
     }
   };
-  
-  
-  
+
+  const handleInputBlur = () => {
+    if (searchPlayerId === '' && searchTransactionId === '') {
+      setIsVerified(false);
+      setVerificationStatus('');
+      setPlayerData(null);
+    }
+  };
+
   return (
     <div className='flex flex-col gap-6'>
       <input
@@ -132,6 +124,7 @@ const SearchPlayer = () => {
         placeholder="Enter Player ID"
         value={searchPlayerId}
         onChange={(e) => setSearchPlayerId(e.target.value)}
+        onBlur={handleInputBlur}
         className="p-2 border border-gray-300 rounded text-black"
       />
       <input
@@ -139,6 +132,7 @@ const SearchPlayer = () => {
         placeholder="Enter Transaction ID"
         value={searchTransactionId}
         onChange={(e) => setSearchTransactionId(e.target.value)}
+        onBlur={handleInputBlur}
         className="p-2 border border-gray-300 rounded text-black"
       />
 
@@ -149,7 +143,6 @@ const SearchPlayer = () => {
       {playerData && (
         <div>
           <p>Player Name: {playerData.name} </p>
-          <p>Player ID: {playerData.id} </p>
           <p>TransactionID: {playerData.transaction}</p>
         </div>
       )}
@@ -168,3 +161,4 @@ const SearchPlayer = () => {
 };
 
 export default SearchPlayer;
+
