@@ -11,97 +11,102 @@ const SearchPlayer = () => {
   const [playerData, setPlayerData] = useState<any>(null);
 
   useEffect(() => {
-    if (searchPlayerId === '') {
-      setVerificationStatus('');
+    if (searchPlayerId === '' && searchTransactionId === '') {
       setIsVerified(false);
-      setPlayerData(null);
       return;
     }
 
     const fetchPlayerInfo = async () => {
-      const { data: existingData, error: existingError } = await supabase
-        .from('formPlayer')
-        .select('name, transaction')
-        .eq('id', searchPlayerId)
-        .single();
-
-      if (existingError) {
-        console.error(existingError);
+      let playerInfo = null;
+    
+      if (searchPlayerId !== '') {
+        const { data: playerData, error: playerError } = await supabase
+          .from('formPlayer')
+          .select('name, transaction, verified')
+          .eq('id', searchPlayerId)
+          .single();
+    
+        if (!playerError && playerData) {
+          setIsVerified(playerData.verified); // Set isVerified based on playerData
+          setVerificationStatus(playerData.verified ? 'Verified' : 'ID found');
+          playerInfo = playerData;
+        }
+      }
+    
+      if (!playerInfo && searchTransactionId !== '') {
+        const { data: transactionData, error: transactionError } = await supabase
+          .from('formPlayer')
+          .select('name, transaction, verified')
+          .eq('transaction', searchTransactionId)
+          .single();
+    
+        if (!transactionError && transactionData) {
+          setIsVerified(transactionData.verified); // Set isVerified based on transactionData
+          setVerificationStatus(transactionData.verified ? 'Verified' : 'Transaction ID found');
+          playerInfo = transactionData;
+        }
+      }
+    
+      if (!playerInfo) {
         setIsVerified(false);
-        // setVerificationStatus('ID does not match');
-        setPlayerData(null);
-      } else if (existingData) {
-        setIsVerified(false); // Reset verification status
-        // setVerificationStatus('ID matches');
-        setPlayerData(existingData);
+        setVerificationStatus('ID and Transaction ID do not exist');
+        setPlayerData(null); // Remove player data when there's no data
       } else {
-        setIsVerified(false);
-        // setVerificationStatus('ID does not exist');
-        setPlayerData(null);
+        setPlayerData(playerInfo);
       }
     };
-
+    
     fetchPlayerInfo();
-  }, [searchPlayerId]);
+  }, [searchPlayerId, searchTransactionId]);
 
-  useEffect(() => {
-    if (searchPlayerId === '' || searchTransactionId === '') {
-      setIsVerified(false);
-      return;
-    }
-
-    const verifyTransaction = async () => {
+  const handleVerification = async () => {
+    if (isVerified) {
+      setVerificationStatus('ID already verified');
+    } else if (verificationStatus === 'Verified') {
+      setVerificationStatus('ID already verified');
+    } else {
       const { data: existingData, error: existingError } = await supabase
         .from('formPlayer')
         .select('id, verified')
         .eq('id', searchPlayerId)
         .eq('transaction', searchTransactionId)
         .single();
-
+  
       if (existingError) {
         console.error(existingError);
-        setIsVerified(false);
-        setVerificationStatus('ID does not match');
+        setVerificationStatus('Verification failed');
       } else if (existingData) {
-        setIsVerified(existingData.verified);
-        setVerificationStatus(existingData.verified ? 'Verified' : 'ID and Transaction ID match');
+        if (existingData.verified) {
+          setVerificationStatus('ID already verified');
+        } else {
+          const { error: verError } = await supabase
+            .from('formPlayer')
+            .update({ verified: true, created: new Date() })
+            .eq('id', searchPlayerId)
+            .eq('transaction', searchTransactionId);
+  
+          if (verError) {
+            console.error(verError);
+            setVerificationStatus('Verification failed');
+          } else {
+            setSearchPlayerId('');
+            setSearchTransactionId('');
+            setIsVerified(true);
+            setVerificationStatus('Verified');
+            setShowSuccessMessage(true);
+            setPlayerData(null); // Reset player data to hide it
+            setTimeout(() => {
+              setShowSuccessMessage(false);
+            }, 3000);
+          }
+        }
       } else {
-        setIsVerified(false);
         setVerificationStatus('ID or Transaction ID does not exist');
       }
-    };
-
-    verifyTransaction();
-  }, [searchPlayerId, searchTransactionId]);
-
-  const handleVerification = async () => {
-    if (isVerified) {
-      setVerificationStatus('ID already verified');
-    } else if (verificationStatus === 'ID and Transaction ID match') {
-      const { error: verError } = await supabase
-        .from('formPlayer')
-        .update({ verified: true, created: new Date() })
-        .eq('id', searchPlayerId)
-        .eq('transaction', searchTransactionId);
-
-      if (verError) {
-        console.error(verError);
-        setVerificationStatus('Verification failed');
-      } else {
-        setSearchPlayerId('');
-        setSearchTransactionId('');
-        setIsVerified(true);
-        setVerificationStatus('Verified');
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-          setShowSuccessMessage(false);
-        }, 3000);
-      }
-    } else {
-      setVerificationStatus('Please enter a valid ID and Transaction ID');
     }
   };
-
+  
+  
   return (
     <div className='flex flex-col gap-6'>
       <input
@@ -119,15 +124,12 @@ const SearchPlayer = () => {
         className="p-2 border border-gray-300 rounded text-black"
       />
 
-      
-
       <button onClick={handleVerification} className="px-4 py-2 bg-blue-500 text-white rounded">
         Verify
       </button>
 
       {playerData && (
         <div>
-          
           <p>Player Name: {playerData.name} </p>
           <p>TransactionID: {playerData.transaction}</p>
         </div>
