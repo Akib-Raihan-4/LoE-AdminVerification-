@@ -15,55 +15,69 @@ const SearchPlayer = () => {
       setIsVerified(false);
       return;
     }
-
+  
     const fetchPlayerInfo = async () => {
       let playerInfo = null;
-    
+  
       if (searchPlayerId !== '') {
         const { data: playerData, error: playerError } = await supabase
           .from('formPlayer')
-          .select('name, transaction, verified')
+          .select('name, transaction, verified, id')
           .eq('id', searchPlayerId)
           .single();
-    
+  
         if (!playerError && playerData) {
-          setIsVerified(playerData.verified); // Set isVerified based on playerData
-          setVerificationStatus(playerData.verified ? 'Verified' : 'ID found');
+          setIsVerified(playerData.verified);
           playerInfo = playerData;
         }
       }
-    
+  
       if (!playerInfo && searchTransactionId !== '') {
         const { data: transactionData, error: transactionError } = await supabase
           .from('formPlayer')
-          .select('name, transaction, verified')
+          .select('name, transaction, verified, id')
           .eq('transaction', searchTransactionId)
           .single();
-    
+  
         if (!transactionError && transactionData) {
-          setIsVerified(transactionData.verified); // Set isVerified based on transactionData
-          setVerificationStatus(transactionData.verified ? 'Verified' : 'Transaction ID found');
+          setIsVerified(transactionData.verified);
           playerInfo = transactionData;
         }
       }
-    
+  
       if (!playerInfo) {
-        setIsVerified(false);
-        setVerificationStatus('ID and Transaction ID do not exist');
-        setPlayerData(null); // Remove player data when there's no data
+        setPlayerData(null);
       } else {
         setPlayerData(playerInfo);
       }
+  
+      if (isVerified) {
+        setVerificationStatus('Verified');
+        setTimeout(() => {
+          setVerificationStatus('');
+        }, 3000); // Clear the message after 3 seconds
+      } else if (searchPlayerId === '' && searchTransactionId === '') {
+        setIsVerified(false);
+        setVerificationStatus('');
+        setPlayerData(null);
+      }
     };
-    
+  
     fetchPlayerInfo();
   }, [searchPlayerId, searchTransactionId]);
+  
 
   const handleVerification = async () => {
     if (isVerified) {
       setVerificationStatus('ID already verified');
+      setTimeout(() => {
+        setVerificationStatus('');
+      }, 3000); 
     } else if (verificationStatus === 'Verified') {
       setVerificationStatus('ID already verified');
+      setTimeout(() => {
+        setVerificationStatus('');
+      }, 3000); 
     } else {
       const { data: existingData, error: existingError } = await supabase
         .from('formPlayer')
@@ -78,6 +92,9 @@ const SearchPlayer = () => {
       } else if (existingData) {
         if (existingData.verified) {
           setVerificationStatus('ID already verified');
+          setTimeout(() => {
+            setVerificationStatus('');
+          }, 3000); // Clear the message after 3 seconds
         } else {
           const { error: verError } = await supabase
             .from('formPlayer')
@@ -92,9 +109,9 @@ const SearchPlayer = () => {
             setSearchPlayerId('');
             setSearchTransactionId('');
             setIsVerified(true);
-            setVerificationStatus('Verified');
+            setVerificationStatus('');
             setShowSuccessMessage(true);
-            setPlayerData(null); // Reset player data to hide it
+            setPlayerData(null);
             setTimeout(() => {
               setShowSuccessMessage(false);
             }, 3000);
@@ -105,6 +122,7 @@ const SearchPlayer = () => {
       }
     }
   };
+  
   
   
   return (
@@ -131,6 +149,7 @@ const SearchPlayer = () => {
       {playerData && (
         <div>
           <p>Player Name: {playerData.name} </p>
+          <p>Player ID: {playerData.id} </p>
           <p>TransactionID: {playerData.transaction}</p>
         </div>
       )}
