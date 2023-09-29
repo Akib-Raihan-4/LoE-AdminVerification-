@@ -49,8 +49,11 @@ const TablePlayer = () => {
 
   
   const filteredPlayers = unverifiedPlayers.filter((player:any) =>
-    String(player.id).toLowerCase().includes(searchInput.toLowerCase())
-  );
+    String(player.name).toLowerCase().includes(searchInput.toLowerCase()) ||
+    String(player.transaction).toLowerCase().includes(searchInput.toLowerCase()) ||
+    String(player.id).toLowerCase().includes(searchInput.toLowerCase()
+  )
+);
 
   const table = useMemo(() => {
     return (
@@ -87,7 +90,7 @@ const TablePlayer = () => {
       
       <input
         type="text"
-        placeholder="Search Player ID"
+        placeholder="Search by Name, ID, or Transaction ID"
         value={searchInput}
         style={{
             border: '1px solid #ccc', 
