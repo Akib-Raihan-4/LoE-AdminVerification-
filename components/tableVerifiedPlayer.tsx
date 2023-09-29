@@ -5,6 +5,7 @@ import './table.css';
 
 const TableVerifiedPlayer = () => {
  const [verifiedPlayers, setVerifiedPlayers] = useState<any>([]);
+ const [searchInput, setSearchInput] = useState('');
 
  useEffect(() => {
   const fetchVerifiedPlayers = async () => {
@@ -36,6 +37,12 @@ const TableVerifiedPlayer = () => {
   }
  };
 
+ const filteredPlayers = verifiedPlayers.filter((player:any) =>
+    String(player.name).toLowerCase().includes(searchInput.toLowerCase()) ||
+    String(player.transaction).toLowerCase().includes(searchInput.toLowerCase()) ||
+    String(player.id).toLowerCase().includes(searchInput.toLowerCase())
+    );
+
  const table = useMemo(() => {
   return (
    <table>
@@ -49,7 +56,7 @@ const TableVerifiedPlayer = () => {
      </tr>
     </thead>
     <tbody>
-     {verifiedPlayers.map((player:any) => (
+     {filteredPlayers.map((player:any) => (
       <tr key={player.id}>
        <td>{player.name}</td>
        <td>{player.id}</td>
@@ -63,11 +70,24 @@ const TableVerifiedPlayer = () => {
     </tbody>
    </table>
   );
- }, [verifiedPlayers]);
+ }, [filteredPlayers]);
 
  return (
   <div className="mt-10 max-h-[2px]">
    <h1 className="text-2xl my-8">Verified Player Accounts</h1>
+   <input
+        type="text"
+        placeholder="Search by Name, ID, or Transaction ID"
+        value={searchInput}
+        style={{
+            border: '1px solid #ccc', 
+            height: '40px', 
+            padding: '8px', 
+            borderRadius: '4px', 
+            marginBottom: '40px',
+        }}
+        onChange={(e) => setSearchInput(e.target.value)}
+    />
    {table}
   </div>
  );

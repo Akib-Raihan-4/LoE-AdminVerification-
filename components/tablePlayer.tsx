@@ -22,7 +22,6 @@ const TablePlayer = () => {
         setUnverifiedPlayers(data || []);
       }
     };
-
     fetchUnverifiedPlayers();
   });
 
@@ -31,7 +30,7 @@ const TablePlayer = () => {
       .from('formPlayer')
       .update({ verified: true })
       .eq('id', playerId);
-
+      
     if (error) {
       console.error(error);
       setVerificationStatus('Failed to verify player');
@@ -51,9 +50,8 @@ const TablePlayer = () => {
   const filteredPlayers = unverifiedPlayers.filter((player:any) =>
     String(player.name).toLowerCase().includes(searchInput.toLowerCase()) ||
     String(player.transaction).toLowerCase().includes(searchInput.toLowerCase()) ||
-    String(player.id).toLowerCase().includes(searchInput.toLowerCase()
-  )
-);
+    String(player.id).toLowerCase().includes(searchInput.toLowerCase())
+  );
 
   const table = useMemo(() => {
     return (
