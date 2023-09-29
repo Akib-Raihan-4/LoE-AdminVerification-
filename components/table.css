@@ -1,0 +1,33 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+  
+th, td {
+border: 1px solid black;
+padding: 5px;
+}
+  
+th {
+text-align: center;
+}
+  
+h1 {
+text-align: center;
+}
+button {
+    background-color: #008000;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+background-color: #006400;
+}
+
+.unverify-button {
+    background-color: red;
+    color: white;
+}
