@@ -13,7 +13,7 @@ const TablePlayer = () => {
     const fetchUnverifiedPlayers = async () => {
       const { data, error } = await supabase
         .from('formPlayer')
-        .select('name, id, transaction, paymentVia')
+        .select('name, id, transaction, paymentVia,email')
         .eq('verified', false);
 
       if (error) {
@@ -59,6 +59,7 @@ const TablePlayer = () => {
         <thead>
           <tr>
             <th>Name</th>
+            <th>Email</th>
             <th>Player ID</th>
             <th>Transaction ID</th>
             <th>Payment Via</th>
@@ -69,6 +70,7 @@ const TablePlayer = () => {
           {filteredPlayers.map((player:any) => (
             <tr key={player.id}>
               <td>{player.name}</td>
+              <td>{player.email}</td>
               <td>{player.id}</td>
               <td>{player.transaction}</td>
               <td>{player.paymentVia}</td>
