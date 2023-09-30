@@ -83,7 +83,7 @@ const TablePlayer = () => {
   }, [filteredPlayers]);
 
   return (
-    <div className="mt-10 max-h-[2px]">
+    <div className="mt-10">
       <h1 className="text-2xl my-8">Unverified Player Accounts</h1>
       
       <input

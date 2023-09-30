@@ -2,7 +2,7 @@ table {
     border-collapse: collapse;
     width: 100%;
 }
-  
+
 th, td {
 border: 1px solid black;
 padding: 5px;
@@ -31,3 +31,31 @@ background-color: #006400;
     background-color: red;
     color: white;
 }
+
+@media (max-width: 768px) {
+    table {
+      width: 100%;
+    }
+  
+    th, td {
+      display: block;
+      width: 100%;
+    }
+  
+    tr {
+      margin-bottom: 10px;
+      display: block;
+      border: 1px solid #ccc;
+    }
+  
+    td:before {
+      content: attr(data-label);
+      font-weight: bold;
+      display: inline-block;
+      width: 50%;
+    }
+  
+    button {
+      width: 100%;
+    }
+  }
