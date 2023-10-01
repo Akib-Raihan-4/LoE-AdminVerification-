@@ -86,7 +86,7 @@ const TablePlayer = () => {
 
   return (
     <div className="mt-10">
-      <h1 className="text-2xl my-8">Unverified Player Accounts</h1>
+      <h1 className="text-2xl my-8">Unverified Player Accounts: {unverifiedPlayers.length}</h1>
       
       <input
         type="text"

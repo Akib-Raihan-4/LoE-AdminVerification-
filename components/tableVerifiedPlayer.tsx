@@ -76,7 +76,7 @@ const TableVerifiedPlayer = () => {
 
  return (
   <div className="mt-10 max-h-[2px]">
-   <h1 className="text-2xl my-8">Verified Player Accounts</h1>
+   <h1 className="text-2xl my-8">Verified Player Accounts: {verifiedPlayers.length}</h1>
    <input
         type="text"
         placeholder="Search by Name, ID, or Transaction ID"
