@@ -27,7 +27,7 @@ const TablePlayer = () => {
    }
   };
   fetchUnverifiedPlayers();
- }, []);
+ });
 
  const handleVerifyPlayer = async (playerId: any) => {
   const { data, error } = await supabase
