@@ -4,7 +4,7 @@ import TablePlayer from '@/components/tablePlayer'
 import TableVerifiedPlayer from '@/components/tableVerifiedPlayer'
 export default function Home() {
   return (
-    <div className='w-screen sm:flex justify-center gap-10 '>
+    <div className='w-screen sm:flex justify-center gap-2 '>
       <TablePlayer/>
       <TableVerifiedPlayer/>
     </div>
