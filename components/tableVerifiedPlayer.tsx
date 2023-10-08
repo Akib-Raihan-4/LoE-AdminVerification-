@@ -10,12 +10,13 @@ const TableVerifiedPlayer = () => {
  const [femaleCount, setFemaleCount] = useState<number>(0);
  const [maleChecked, setMaleChecked] = useState(false);
  const [femaleChecked, setFemaleChecked] = useState(false);
+ const [selectedRating, setSelectedRating] = useState<string>('');
 
  useEffect(() => {
   const fetchVerifiedPlayers = async () => {
    const { data, error } = await supabase
     .from('formPlayer')
-    .select('name, id, transaction, paymentVia, email, gender')
+    .select('*')
     .eq('verified', true);
 
    if (error) {
@@ -42,22 +43,26 @@ const TableVerifiedPlayer = () => {
  };
 
  const filteredPlayers = useMemo(() => {
-    let filtered = verifiedPlayers.filter((player: any) =>
-      String(player.name).toLowerCase().includes(searchInput.toLowerCase()) ||
-      String(player.transaction).toLowerCase().includes(searchInput.toLowerCase()) ||
-      String(player.id).toLowerCase().includes(searchInput.toLowerCase())
-    );
-  
-    if (maleChecked) {
-      filtered = filtered.filter((player: any) => player.gender === 'Male');
-    }
-  
-    if (femaleChecked) {
-      filtered = filtered.filter((player: any) => player.gender === 'Female');
-    }
-  
-    return filtered;
-   }, [verifiedPlayers, searchInput, maleChecked, femaleChecked]);
+  let filtered = verifiedPlayers.filter((player: any) =>
+    String(player.name).toLowerCase().includes(searchInput.toLowerCase()) ||
+    String(player.transaction).toLowerCase().includes(searchInput.toLowerCase()) ||
+    String(player.id).toLowerCase().includes(searchInput.toLowerCase())
+  );
+
+  if (maleChecked) {
+    filtered = filtered.filter((player: any) => player.gender === 'Male');
+  }
+
+  if (femaleChecked) {
+    filtered = filtered.filter((player: any) => player.gender === 'Female');
+  }
+
+  if (selectedRating) {
+    filtered = filtered.filter((player: any) => player.rating === selectedRating);
+  }
+
+  return filtered;
+}, [verifiedPlayers, searchInput, maleChecked, femaleChecked, selectedRating]);
 
 
  useEffect(() => {
@@ -78,6 +83,7 @@ const TableVerifiedPlayer = () => {
       <th>Transaction ID</th>
       <th>Payment Via</th>
       <th>Gender</th>
+      <th>Rating</th>
       <th>Action</th>
      </tr>
     </thead>
@@ -90,6 +96,7 @@ const TableVerifiedPlayer = () => {
        <td>{player.transaction}</td>
        <td>{player.paymentVia}</td>
        <td>{player.gender}</td>
+       <td>{player.rating}</td>
        <td>
         <button onClick={() => handleUnverifyPlayer(player.id)}>Unverify</button>
        </td>
@@ -115,6 +122,19 @@ const TableVerifiedPlayer = () => {
     <label>
       Female
       <input type="checkbox" checked={femaleChecked} onChange={() => setFemaleChecked(!femaleChecked)} />
+    </label>
+    <label>
+      Rating:
+      <select
+        value={selectedRating}
+        onChange={(e) => setSelectedRating(e.target.value)}
+      >
+        <option value="">All Ratings</option>
+        <option value="Icon">Icon</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+      </select>
     </label>
    </div>
    <div className='flex justify-center'>
