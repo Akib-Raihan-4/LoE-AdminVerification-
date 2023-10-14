@@ -85,6 +85,7 @@ const TableVerifiedPlayer = () => {
       <th>Gender</th>
       <th>Contact No.</th>
       <th>Rating</th>
+      <th>Past Tournament</th>
       <th>Action</th>
      </tr>
     </thead>
@@ -99,6 +100,7 @@ const TableVerifiedPlayer = () => {
        <td>{player.gender}</td>
        <td>{player.phone}</td>
        <td>{player.rating}</td>
+       <td>{player.pastTour}</td>
        <td>
         <button onClick={() => handleUnverifyPlayer(player.id)}>Unverify</button>
        </td>
