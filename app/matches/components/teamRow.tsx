@@ -1,22 +1,35 @@
 
 "use client"
 import React, { useEffect, useState } from 'react';
-import supabase from '@/config/supabase';
 
 const TeamRow = ({ team , onUpdate }:any) => {
     const [result, setResult] = useState('');
     const [scored, setScored] = useState('0');
     const [conceded, setConceded] = useState('0');
+    const [successButton, setSuccessButton] = useState('Submit')
   
-    const handleUpdate = () => {
-      // console.log(team.teamID)
-      onUpdate({
-        teamID: team.teamID,
-        result,
-        scored,
-        conceded,
-      });
+    const handleUpdate = async () => {
+      try {
+        await onUpdate({
+          teamID: team.teamID,
+          result,
+          scored,
+          conceded,
+        });
+    
+        setResult('') 
+        setScored('0') 
+        setConceded('0')
+        setSuccessButton('Submitted')
+        setTimeout(() =>{
+          setSuccessButton('Submit')
+        },3000)
+        
+      } catch (error) {
+        console.error('Error updating team:', error);
+      }
     };
+    
   
     return (
       <tr key={team.teamID} className='bg-white hover:bg-gray-100'>
@@ -56,7 +69,7 @@ const TeamRow = ({ team , onUpdate }:any) => {
             onClick={handleUpdate}
             className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
           >
-            Submit
+            {successButton}
           </button>
         </td>
       </tr>

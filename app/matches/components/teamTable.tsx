@@ -93,7 +93,7 @@ const TeamTable = () => {
 
   return (
     <div className='bg-gray-100 p-8'>
-      <h1 className='text-center text-3xl font-bold mb-8'>Admin Dashboard</h1>
+      <h1 className='text-center text-3xl font-bold mb-8'>Matches Updates</h1>
       <table className='w-full'>
         <thead className='bg-blue-500 text-white'>
           <tr>
