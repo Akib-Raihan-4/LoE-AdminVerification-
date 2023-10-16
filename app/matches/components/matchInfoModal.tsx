@@ -3,41 +3,54 @@ import supabase from '@/config/supabase';
 import React, { useState, useEffect } from 'react';
 
 const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) => {
-  const [homePlayerID, setHomePlayerID] = useState<any>([])
-  const [awayPlayerID, setAwayPlayerID] = useState<any>([])
+  
+
+  const [homePlayers, setHomePlayers] = useState([]);
+  const [awayPlayers, setAwayPlayers] = useState([]);
 
   useEffect(() => {
-    const fetchPlayerID = async (homeTeamName: any, awayTeamName: any) => {
-      const { data: homeID, error: homeError } = await supabase.from('PlayerTable')
-        .select('id')
-        .eq('teamName', homeTeamName)
-      const { data: awayID, error: awayError } = await supabase.from('PlayerTable')
-        .select('id')
-        .eq('teamName', awayTeamName)
+    const fetchPlayerData = async (teamName:any, setPlayers:any) => {
+      const { data, error } = await supabase
+        .from('PlayerTable')
+        .select('id, name')
+        .eq('teamName', teamName);
 
-      if (homeError) {
-        console.log('Error fetching home player ID', homeError)
-        return
+      if (error) {
+        console.log(`Error fetching player data for ${teamName}`, error);
+        return;
       }
-      if (awayError) {
-        console.log('Error fetching away player ID', homeError)
-        return
-      }
-      setHomePlayerID(homeID)
-      setAwayPlayerID(awayID)
+
+      setPlayers(data || []);
+    };
+
+    if (homeTeamName) {
+      fetchPlayerData(homeTeamName, setHomePlayers);
     }
-    fetchPlayerID(homeTeamName,awayTeamName)
-  }, [])
+
+    if (awayTeamName) {
+      fetchPlayerData(awayTeamName, setAwayPlayers);
+    }
+  }, [homeTeamName, awayTeamName]);
   
 
   return (
-    <div className={`modal ${isOpen ? 'is-open' : ''}`}>
-      <div className="modal-content">
-        {/* {console.log(homePlayerID)} */}
-        <p>Home Team Name: {homeTeamName}</p>
-        <p>Away Team Name: {awayTeamName}</p>
-        <button onClick={onClose}>Close</button>
-      </div>
+    <div>
+      <h2>{homeTeamName} Players</h2>
+      {console.log(homePlayers)}
+      <ul>
+        {homePlayers.map((player) => (
+          <li key={player.id}>{player.name}</li>
+        ))}
+      </ul>
+
+      <h2>{awayTeamName} Players</h2>
+      <ul>
+        {awayPlayers.map((player) => (
+          <li key={player.id}>{player.name}</li>
+        ))}
+      </ul>
+
+      {/* Other content in your modal */}
     </div>
   );
 };
