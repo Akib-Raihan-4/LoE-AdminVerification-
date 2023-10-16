@@ -3,13 +3,13 @@ import supabase from '@/config/supabase';
 import React, { useState, useEffect } from 'react';
 
 const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) => {
-  
+
 
   const [homePlayers, setHomePlayers] = useState([]);
   const [awayPlayers, setAwayPlayers] = useState([]);
 
   useEffect(() => {
-    const fetchPlayerData = async (teamName:any, setPlayers:any) => {
+    const fetchPlayerData = async (teamName: any, setPlayers: any) => {
       const { data, error } = await supabase
         .from('PlayerTable')
         .select('id, name')
@@ -31,28 +31,93 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
       fetchPlayerData(awayTeamName, setAwayPlayers);
     }
   }, [homeTeamName, awayTeamName]);
-  
+
 
   return (
-    <div>
-      <h2>{homeTeamName} Players</h2>
-      {console.log(homePlayers)}
-      <ul>
-        {homePlayers.map((player) => (
-          <li key={player.id}>{player.name}</li>
-        ))}
-      </ul>
-
-      <h2>{awayTeamName} Players</h2>
-      <ul>
-        {awayPlayers.map((player) => (
-          <li key={player.id}>{player.name}</li>
-        ))}
-      </ul>
-
-      {/* Other content in your modal */}
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-opacity-80 bg-gray-900 ${isOpen ? 'block' : 'hidden'
+        }`}
+    >
+      <div className="bg-white p-4 rounded-lg shadow-md w-full md:w-3/4 lg:w-1/2">
+        <h2 className="text-2xl font-bold mb-4 text-center">Match Info</h2>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold mb-2 text-center">{homeTeamName} Players</h3>
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th>Player Name</th>
+                <th>Scored</th>
+                <th>Own Goal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {homePlayers.map((player:any) => (
+                <tr key={player.id}>
+                  <td>{player.name}</td>
+                  <td>
+                    <input
+                      type="number"
+                      className="w-16 border rounded"
+                      placeholder="Scored"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      className="w-16 border rounded"
+                      placeholder="Own Goal"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-2 text-center">{awayTeamName} Players</h3>
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th>Player Name</th>
+                <th>Scored</th>
+                <th>Own Goal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {awayPlayers.map((player:any) => (
+                <tr key={player.id}>
+                  <td>{player.name}</td>
+                  <td>
+                    <input
+                      type="number"
+                      className="w-16 border rounded"
+                      placeholder="Scored"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      className="w-16 border rounded"
+                      placeholder="Own Goal"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="text-center mt-4">
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+      </div>
     </div>
   );
+
 };
 
 export default MatchInfoModal;
