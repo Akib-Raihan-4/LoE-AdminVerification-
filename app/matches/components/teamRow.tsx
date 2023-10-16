@@ -77,3 +77,5 @@ const TeamRow = ({ team , onUpdate }:any) => {
 };
 
 export default TeamRow
+
+

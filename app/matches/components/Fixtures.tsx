@@ -1,11 +1,14 @@
 "use client"
 import supabase from '@/config/supabase'
 import React, { useEffect, useState } from 'react'
+import MatchInfoModal from './matchInfoModal'
 
 const Fixtures = () => {
 
   const [fixtureData, setFixtureData] = useState<any>([])
   const [teamNames, setTeamNames] = useState<any>({})
+  const [isModalOpen, setIsModalOpen] = useState<any>(false)
+  const [selectedMatch, setSelectedMatch] = useState<any>([])
 
   useEffect(() => {
     const fetchFixtureData = async () => {
@@ -56,20 +59,39 @@ const Fixtures = () => {
   }, [fixtureData]);
 
 
-  const handleSubmit = () => {
+  const handleOpenModal = (matchID: any, homeTeamID: any, awayTeamID: any) => {
+    setSelectedMatch({ matchID, homeTeamID, awayTeamID });
+    setIsModalOpen(true);
+  };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
   }
 
   return (
     <div className='grid grid-cols-3 place-items-center mt-20'>
       {fixtureData.length > 0 &&
         fixtureData.map((fixture: any) => (
-          <div>
-            <button key={fixture.matchID} className='w-[200px] h-[100px] bg-green-300 text-gray-500 rounded-[20px] font-bold'>Match: <span className='text-red-900 font-bold' onSubmit={handleSubmit}>{fixture.matchID}</span> <br /> {teamNames[fixture.home]} vs {teamNames[fixture.away]}</button>
+          <div key={fixture.matchID}>
+            <button className='w-[200px] h-[100px] bg-green-300 text-gray-500 rounded-[20px] font-bold' onClick={() => handleOpenModal(fixture.matchID, fixture.home, fixture.away)}>Match:
+              <span className='text-red-900 font-bold'>
+                {fixture.matchID}
+              </span>
+              <br />
+              {teamNames[fixture.home]} vs {teamNames[fixture.away]}
+            </button>
           </div>
         ))
       }
-      
+      {isModalOpen &&
+        <MatchInfoModal
+          homeTeamID={selectedMatch?.homeTeamID}
+          awayTeamID={selectedMatch?.awayTeamID}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
+      }
+
     </div>
   )
 }
