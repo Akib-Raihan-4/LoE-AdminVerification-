@@ -52,7 +52,7 @@ const TeamRow = ({ team , onUpdate }:any) => {
             placeholder='Scored'
             value={scored}
             onChange={(e) => setScored(e.target.value)}
-            className='w-full p-2 border border-gray-400 rounded'
+            className='w-full  p-2 border border-gray-400 rounded'
           />
         </td>
         <td className='py-2'>

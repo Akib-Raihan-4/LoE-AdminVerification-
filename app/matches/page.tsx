@@ -1,9 +1,9 @@
 import React from 'react'
-import TeamTable from './components/teamTable'
+import Fixtures from './components/Fixtures'
 const Matches = () => {
   return (
     <div className='w-screen sm:flex sm:flex-col justify-center gap-2 sm:w-[1440px] sm:mx-auto '>
-      <TeamTable/>
+      <Fixtures/>
     </div>
   )
 }
