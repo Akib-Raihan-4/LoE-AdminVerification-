@@ -41,30 +41,30 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
       <div className="bg-white p-4 rounded-lg shadow-md w-full md:w-3/4 lg:w-1/2">
         <h2 className="text-2xl font-bold mb-4 text-center">Match Info</h2>
         <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2 text-center">{homeTeamName} Players</h3>
+          <h3 className="text-lg font-semibold my-10 text-center">{homeTeamName} Players</h3>
           <table className="w-full">
             <thead>
               <tr>
-                <th>Player Name</th>
-                <th>Scored</th>
-                <th>Own Goal</th>
+                <th className='text-start pb-3' >Player Name</th>
+                <th className='text-start pb-3'>Scored</th>
+                <th className='text-start pb-3'>Own Goal</th>
               </tr>
             </thead>
             <tbody>
-              {homePlayers.map((player:any) => (
+              {homePlayers.map((player: any) => (
                 <tr key={player.id}>
-                  <td>{player.name}</td>
+                  <td style={{ width: '300px' }}>{player.name}</td>
                   <td>
                     <input
                       type="number"
-                      className="w-16 border rounded"
+                      className="w-32 border rounded"
                       placeholder="Scored"
                     />
                   </td>
                   <td>
                     <input
                       type="number"
-                      className="w-16 border rounded"
+                      className="w-32 border rounded"
                       placeholder="Own Goal"
                     />
                   </td>
@@ -74,30 +74,30 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
           </table>
         </div>
         <div>
-          <h3 className="text-lg font-semibold mb-2 text-center">{awayTeamName} Players</h3>
+          <h3 className="text-lg font-semibold my-10 text-center">{awayTeamName} Players</h3>
           <table className="w-full">
             <thead>
               <tr>
-                <th>Player Name</th>
-                <th>Scored</th>
-                <th>Own Goal</th>
+                <th className='text-start pb-3' >Player Name</th>
+                <th className='text-start pb-3'>Scored</th>
+                <th className='text-start pb-3'>Own Goal</th>
               </tr>
             </thead>
             <tbody>
-              {awayPlayers.map((player:any) => (
+              {awayPlayers.map((player: any) => (
                 <tr key={player.id}>
-                  <td>{player.name}</td>
+                  <td style={{ width: '300px' }}>{player.name}</td>
                   <td>
                     <input
                       type="number"
-                      className="w-16 border rounded"
+                      className="w-32 border rounded"
                       placeholder="Scored"
                     />
                   </td>
                   <td>
                     <input
                       type="number"
-                      className="w-16 border rounded"
+                      className="w-32 border rounded"
                       placeholder="Own Goal"
                     />
                   </td>
