@@ -61,7 +61,7 @@ const Fixtures = () => {
   }
 
   return (
-    <div className='flex  justify-center gap-10 mt-20'>
+    <div className='grid grid-cols-3 place-items-center mt-20'>
       {fixtureData.length > 0 &&
         fixtureData.map((fixture: any) => (
           <div>
