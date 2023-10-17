@@ -9,6 +9,7 @@ const Fixtures = () => {
   const [isModalOpen, setIsModalOpen] = useState<any>(false);
   const [selectedMatch, setSelectedMatch] = useState<any>({});
 
+  
   useEffect(() => {
     const fetchFixtureData = async () => {
       const { data, error } = await supabase.from('Fixture').select('*');
@@ -20,6 +21,7 @@ const Fixtures = () => {
     };
     fetchFixtureData();
   }, []);
+
 
   useEffect(() => {
     const fetchTeamName = async (teamID:any) => {
@@ -37,6 +39,7 @@ const Fixtures = () => {
       }
     };
 
+
     fixtureData.forEach((fixture:any) => {
       const homeTeamID = fixture.home;
       const awayTeamID = fixture.away;
@@ -51,14 +54,17 @@ const Fixtures = () => {
     });
   }, [fixtureData]);
 
+
   const handleOpenModal = (matchID:any, homeTeamName:any, awayTeamName:any) => {
     setSelectedMatch({ matchID, homeTeamName, awayTeamName });
     setIsModalOpen(true);
   };
 
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
 
   return (
     <div className="grid grid-cols-3 place-items-center mt-20">

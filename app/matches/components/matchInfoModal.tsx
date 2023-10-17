@@ -44,39 +44,33 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
 
 
   useEffect(() => {
-    // Calculate the home team score by summing up the goals from home team players
-    const homeTeamGoals:any = Object.values(homeGoals).reduce(
-      (total:any, goal:any) => total + parseInt(goal || 0),
+    const homeTeamGoals: any = Object.values(homeGoals).reduce(
+      (total: any, goal: any) => total + parseInt(goal || 0),
       0
     );
-  
-    // Calculate the home team own goals from home team players
-    const homeTeamOwnGoals:any = Object.values(homeOwnGoals).reduce(
-      (total:any, ownGoal:any) => total + parseInt(ownGoal || 0),
+
+    const homeTeamOwnGoals: any = Object.values(homeOwnGoals).reduce(
+      (total: any, ownGoal: any) => total + parseInt(ownGoal || 0),
       0
     );
-  
-    // Calculate the away team score by summing up the goals from away team players
-    const awayTeamGoals:any = Object.values(awayGoals).reduce(
-      (total:any, goal:any) => total + parseInt(goal || 0),
+
+    const awayTeamGoals: any = Object.values(awayGoals).reduce(
+      (total: any, goal: any) => total + parseInt(goal || 0),
       0
     );
-  
-    // Calculate the away team own goals from away team players
-    const awayTeamOwnGoals:any = Object.values(awayOwnGoals).reduce(
-      (total:any, ownGoal:any) => total + parseInt(ownGoal || 0),
+
+    const awayTeamOwnGoals: any = Object.values(awayOwnGoals).reduce(
+      (total: any, ownGoal: any) => total + parseInt(ownGoal || 0),
       0
     );
-  
-    // Calculate the final scores for both teams
+
     const homeTeamFinalScore = homeTeamGoals + awayTeamOwnGoals;
     const awayTeamFinalScore = awayTeamGoals + homeTeamOwnGoals;
-  
-    // Update the state variables with the final scores
+
     setHomeTeamScore(homeTeamFinalScore);
     setAwayTeamScore(awayTeamFinalScore);
   }, [homeGoals, homeOwnGoals, awayGoals, awayOwnGoals]);
-  
+
 
   const updatePlayerStats = async (goals: any, ownGoals: any) => {
     const playerIds = Object.keys(goals);
@@ -105,7 +99,7 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
 
       const updatedGoals = currentGoals + playerGoals;
       const updatedOwnGoals = currentOwnGoals + playerOwnGoals;
-      console.log(updatedGoals)
+      // console.log(updatedGoals)
 
       const { data: updateData, error: updateError } = await supabase
         .from('PlayerTable')
@@ -123,12 +117,167 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
   };
 
 
+
+
+  const updateMatchStats = async (homeTeamScore: any, awayTeamScore: any) => {
+
+    let homeTeamOutcome;
+    let awayTeamOutcome;
+
+    if (homeTeamScore > awayTeamScore) {
+      homeTeamOutcome = 'win';
+      awayTeamOutcome = 'loss';
+    } else if (homeTeamScore < awayTeamScore) {
+      homeTeamOutcome = 'loss';
+      awayTeamOutcome = 'win';
+    } else {
+      homeTeamOutcome = 'draw';
+      awayTeamOutcome = 'draw';
+    }
+
+    // console.log(homeTeamOutcome, awayTeamOutcome)
+
+    const winPoints = 3;
+    const drawPoints = 1;
+    const lossPoints = 0;
+
+    const { data: homeTeamId, error: homeTeamIdError } = await supabase
+      .from('Team')
+      .select('id')
+      .eq('teamName', homeTeamName)
+
+    if (homeTeamIdError) {
+      console.error('Error fetching home team id:', homeTeamIdError)
+      return
+    }
+
+    let homeTeamID = homeTeamId[0].id
+    // console.log(homeTeamID)
+
+    // HOME TEAM UPDATES !!!!
+
+    const { data: homeTeamData, error: homeTeamError } = await supabase
+      .from('TeamTable')
+      .select('played, won, lost, drawn, scored, conceded, difference, points')
+      .eq('teamID', homeTeamID);
+
+    if (homeTeamError) {
+      console.error(`Error fetching home team data:`, homeTeamError);
+      return;
+    }
+
+    const homeTeamStats = homeTeamData[0];
+    // console.log(homeTeamStats)
+
+    const updatedHomeTeamStats = {
+      played: homeTeamStats.played + 1,
+      scored: homeTeamStats.scored + homeTeamScore,
+      conceded: homeTeamStats.conceded + awayTeamScore,
+      difference: homeTeamStats.scored + homeTeamScore - homeTeamStats.conceded - awayTeamScore,
+      points:
+        homeTeamOutcome === 'win'
+          ? homeTeamStats.points + winPoints
+          : homeTeamOutcome === 'draw'
+            ? homeTeamStats.points + drawPoints
+            : homeTeamStats.points + lossPoints,
+      won:
+        homeTeamOutcome === 'win'
+          ? homeTeamStats.won + 1
+          : homeTeamStats.won + 0,
+      drawn:
+        homeTeamOutcome === 'draw'
+          ? homeTeamStats.drawn + 1
+          : homeTeamStats.drawn + 0,
+      lost:
+        homeTeamOutcome === 'loss'
+          ? homeTeamStats.lost + 1
+          : homeTeamStats.lost + 0,
+    };
+
+    // console.log(updatedHomeTeamStats)
+    const { data: homeUpdateData, error: homeUpdateError } = await supabase
+      .from('TeamTable')
+      .update(updatedHomeTeamStats)
+      .eq('teamID', homeTeamID);
+
+    if (homeUpdateError) {
+      console.error(`Error updating home team stats:`, homeUpdateError);
+      return;
+    }
+
+    // AWAY TEAM UPDATES !!!!
+
+    const { data: awayTeamId, error: awayTeamIdError } = await supabase
+      .from('Team')
+      .select('id')
+      .eq('teamName', awayTeamName)
+
+    if (awayTeamIdError) {
+      console.error('Error fetching away team id:', awayTeamIdError)
+      return
+    }
+
+    let awayTeamID = awayTeamId[0].id
+
+    const { data: awayTeamData, error: awayTeamError } = await supabase
+      .from('TeamTable')
+      .select('played, won, lost, drawn, scored, conceded, difference, points')
+      .eq('teamID', awayTeamID);
+
+    if (awayTeamError) {
+      console.error(`Error fetching away team data:`, awayTeamError);
+      return;
+    }
+
+    const awayTeamStats = awayTeamData[0];
+
+    const updatedAwayTeamStats = {
+      played: awayTeamStats.played + 1,
+      scored: awayTeamStats.scored + awayTeamScore,
+      conceded: awayTeamStats.conceded + homeTeamScore,
+      difference: awayTeamStats.scored + awayTeamScore - awayTeamStats.conceded - homeTeamScore,
+      points:
+        awayTeamOutcome === 'win'
+          ? awayTeamStats.points + winPoints
+          : awayTeamOutcome === 'draw'
+            ? awayTeamStats.points + drawPoints
+            : awayTeamStats.points + lossPoints,
+      won:
+        awayTeamOutcome === 'win'
+          ? awayTeamStats.won + 1
+          : awayTeamStats.won + 0,
+      drawn:
+        awayTeamOutcome === 'draw'
+          ? awayTeamStats.drawn + 1
+          : awayTeamStats.drawn + 0,
+      lost:
+        awayTeamOutcome === 'loss'
+          ? awayTeamStats.lost + 1
+          : awayTeamStats.lost + 0,
+    };
+
+    const { data: awayUpdateData, error: awayUpdateError } = await supabase
+      .from('TeamTable')
+      .update(updatedAwayTeamStats)
+      .eq('teamID', awayTeamID);
+
+    if (awayUpdateError) {
+      console.error(`Error updating away team stats:`, awayUpdateError);
+      return;
+    }
+  };
+
+
+
   const handlePlayerStatsSubmit = () => {
     // console.log(homeGoals)
     // console.log(awayGoals)
     updatePlayerStats(homeGoals, homeOwnGoals);
-
     updatePlayerStats(awayGoals, awayOwnGoals);
+
+
+    updateMatchStats(homeTeamScore, awayTeamScore);
+
     onClose();
   };
 
@@ -227,7 +376,7 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
             </tbody>
           </table>
         </div>
-        <div className="text-center mt-4">
+        <div className="text-center mt-4 flex justify-evenly">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             onClick={handlePlayerStatsSubmit}
