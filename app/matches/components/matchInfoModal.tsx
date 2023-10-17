@@ -73,7 +73,7 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
 
 
   const updatePlayerStats = async (goals: any, ownGoals: any) => {
-    const playerIds = Object.keys(goals);
+    const playerIds = Object.keys({ ...goals, ...ownGoals });
     // console.log(playerIds)
 
     const updates = playerIds.map(async (playerId) => {
@@ -94,8 +94,9 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
       }
 
       const currentGoals = data[0].goal;
-      // console.log(currentGoals)
+      console.log(data[0])
       const currentOwnGoals = data[0].ownGoal;
+      // console.log(currentOwnGoals)
 
       const updatedGoals = currentGoals + playerGoals;
       const updatedOwnGoals = currentOwnGoals + playerOwnGoals;
