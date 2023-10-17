@@ -40,51 +40,48 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
 
   const updatePlayerStats = async (goals: any, ownGoals: any) => {
     const playerIds = Object.keys(goals);
-    console.log(playerIds)
+    // console.log(playerIds)
 
     const updates = playerIds.map(async (playerId) => {
-      // const playerGoals = parseInt(goals[playerId] || 0);
-      // const playerOwnGoals = parseInt(ownGoals[playerId] || 0);
-      // const playerIdInt = parseInt(playerId);
+      const playerGoals = parseInt(goals[playerId] || 0);
+      const playerOwnGoals = parseInt(ownGoals[playerId] || 0);
+      const playerIdInt = parseInt(playerId);
 
-      // // Fetch the player's current stats from the database
-      // const { data, error } = await supabase
-      //   .from('PlayerTable')
-      //   .select('goal, ownGoal')
-      //   .eq('id', playerIdInt);
+      // console.log(playerGoals, playerId)
 
-      // if (error) {
-      //   console.error(`Error fetching player data for id ${playerIdInt}:`, error);
-      //   return;
-      // }
+      const { data, error } = await supabase
+        .from('PlayerTable')
+        .select('goal, ownGoal')
+        .eq('id', playerIdInt);
 
-      // const currentGoals = data[0].goal || 0;
-      // const currentOwnGoals = data[0].ownGoal || 0;
+      if (error) {
+        console.error(`Error fetching player data for id ${playerIdInt}:`, error);
+        return;
+      }
 
-      // // Calculate the new total scores
-      // const updatedGoals = currentGoals + playerGoals;
-      // const updatedOwnGoals = currentOwnGoals + playerOwnGoals;
+      const currentGoals = data[0].goal;
+      // console.log(currentGoals)
+      const currentOwnGoals = data[0].ownGoal;
 
-      // // Update the player's stats in the database
-      // const { data: updateData, error: updateError } = await supabase
-      //   .from('PlayerTable')
-      //   .update({
-      //     goal: updatedGoals,
-      //     ownGoal: updatedOwnGoals,
-      //   })
-      //   .eq('id', playerIdInt);
+      
+      const updatedGoals = currentGoals + playerGoals;
+      const updatedOwnGoals = currentOwnGoals + playerOwnGoals;
+      console.log(updatedGoals)
 
-      // if (updateError) {
-      //   console.error(`Error updating player stats for id ${playerIdInt}:`, updateError);
-      //   return;
-      // }
+      
+      const { data: updateData, error: updateError } = await supabase
+        .from('PlayerTable')
+        .update({
+          goal: updatedGoals,
+          ownGoal: updatedOwnGoals,
+        })
+        .eq('id', playerIdInt);
+
+      if (updateError) {
+        console.error(`Error updating player stats for id ${playerIdInt}:`, updateError);
+        return;
+      }
     });
-
-    // const results = await Promise.all(updates);
-
-    // if (results.some((result: any) => result.error)) {
-    //   console.error('Error updating player stats for one or more players.');
-    // }
   };
 
 
