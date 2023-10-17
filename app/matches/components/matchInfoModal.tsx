@@ -17,9 +17,6 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
   const [homeTeamScore, setHomeTeamScore] = useState<any>(0);
   const [awayTeamScore, setAwayTeamScore] = useState<any>(0);
 
-  const [homeTeamGoals, setHomeTeamGoals] = useState<number>(0);
-  const [awayTeamGoals, setAwayTeamGoals] = useState<number>(0);
-
   const [accumulatedGoals, setAccumulatedGoals] = useState<any>({ homeTeamGoals: 0, awayTeamGoals: 0 });
 
 
