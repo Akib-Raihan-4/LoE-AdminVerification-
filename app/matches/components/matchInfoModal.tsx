@@ -46,7 +46,7 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
             <thead>
               <tr>
                 <th className='text-start pb-3' >Player Name</th>
-                <th className='text-start pb-3'>Scored</th>
+                <th className='text-start pb-3'>Goal</th>
                 <th className='text-start pb-3'>Own Goal</th>
               </tr>
             </thead>
@@ -79,7 +79,7 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
             <thead>
               <tr>
                 <th className='text-start pb-3' >Player Name</th>
-                <th className='text-start pb-3'>Scored</th>
+                <th className='text-start pb-3'>Goal</th>
                 <th className='text-start pb-3'>Own Goal</th>
               </tr>
             </thead>
