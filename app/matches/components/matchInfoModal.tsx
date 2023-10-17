@@ -8,11 +8,17 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
   const [homePlayers, setHomePlayers] = useState([]);
   const [awayPlayers, setAwayPlayers] = useState([]);
 
+
+  const [homeGoals, setHomeGoals] = useState<any>({});
+  const [homeOwnGoals, setHomeOwnGoals] = useState<any>({});
+  const [awayGoals, setAwayGoals] = useState<any>({});
+  const [awayOwnGoals, setAwayOwnGoals] = useState<any>({});
+
   useEffect(() => {
     const fetchPlayerData = async (teamName: any, setPlayers: any) => {
       const { data, error } = await supabase
         .from('PlayerTable')
-        .select('id, name')
+        .select('id, name, goal, ownGoal')
         .eq('teamName', teamName);
 
       if (error) {
@@ -32,6 +38,69 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
     }
   }, [homeTeamName, awayTeamName]);
 
+  const updatePlayerStats = async (goals: any, ownGoals: any) => {
+    const playerIds = Object.keys(goals);
+    console.log(playerIds)
+
+    const updates = playerIds.map(async (playerId) => {
+      // const playerGoals = parseInt(goals[playerId] || 0);
+      // const playerOwnGoals = parseInt(ownGoals[playerId] || 0);
+      // const playerIdInt = parseInt(playerId);
+
+      // // Fetch the player's current stats from the database
+      // const { data, error } = await supabase
+      //   .from('PlayerTable')
+      //   .select('goal, ownGoal')
+      //   .eq('id', playerIdInt);
+
+      // if (error) {
+      //   console.error(`Error fetching player data for id ${playerIdInt}:`, error);
+      //   return;
+      // }
+
+      // const currentGoals = data[0].goal || 0;
+      // const currentOwnGoals = data[0].ownGoal || 0;
+
+      // // Calculate the new total scores
+      // const updatedGoals = currentGoals + playerGoals;
+      // const updatedOwnGoals = currentOwnGoals + playerOwnGoals;
+
+      // // Update the player's stats in the database
+      // const { data: updateData, error: updateError } = await supabase
+      //   .from('PlayerTable')
+      //   .update({
+      //     goal: updatedGoals,
+      //     ownGoal: updatedOwnGoals,
+      //   })
+      //   .eq('id', playerIdInt);
+
+      // if (updateError) {
+      //   console.error(`Error updating player stats for id ${playerIdInt}:`, updateError);
+      //   return;
+      // }
+    });
+
+    // const results = await Promise.all(updates);
+
+    // if (results.some((result: any) => result.error)) {
+    //   console.error('Error updating player stats for one or more players.');
+    // }
+  };
+
+
+  const handlePlayerStatsSubmit = () => {
+    // Update home team players' stats
+    // console.log(homeGoals)
+    // console.log(awayGoals)
+    updatePlayerStats(homeGoals, homeOwnGoals);
+
+    // Update away team players' stats
+    updatePlayerStats(awayGoals, awayOwnGoals);
+
+    // Close the modal
+    onClose();
+  };
+
 
   return (
     <div
@@ -45,13 +114,13 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
           <table className="w-full">
             <thead>
               <tr>
-                <th className='text-start pb-3' >Player Name</th>
-                <th className='text-start pb-3'>Goal</th>
-                <th className='text-start pb-3'>Own Goal</th>
+                <th className="text-start pb-3">Player Name</th>
+                <th className="text-start pb-3">Goal</th>
+                <th className="text-start pb-3">Own Goal</th>
               </tr>
             </thead>
             <tbody>
-              {homePlayers.map((player: any) => (
+              {homePlayers.map((player) => (
                 <tr key={player.id}>
                   <td style={{ width: '300px' }}>{player.name}</td>
                   <td>
@@ -59,6 +128,11 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
                       type="number"
                       className="w-32 border rounded"
                       placeholder="Scored"
+                      value={homeGoals[player.id]}
+                      onChange={(e) => {
+                        const updatedGoals = { ...homeGoals, [player.id]: e.target.value };
+                        setHomeGoals(updatedGoals);
+                      }}
                     />
                   </td>
                   <td>
@@ -66,6 +140,11 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
                       type="number"
                       className="w-32 border rounded"
                       placeholder="Own Goal"
+                      value={homeOwnGoals[player.id]}
+                      onChange={(e) => {
+                        const updatedOwnGoals = { ...homeOwnGoals, [player.id]: e.target.value };
+                        setHomeOwnGoals(updatedOwnGoals);
+                      }}
                     />
                   </td>
                 </tr>
@@ -78,13 +157,13 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
           <table className="w-full">
             <thead>
               <tr>
-                <th className='text-start pb-3' >Player Name</th>
-                <th className='text-start pb-3'>Goal</th>
-                <th className='text-start pb-3'>Own Goal</th>
+                <th className="text-start pb-3">Player Name</th>
+                <th className="text-start pb-3">Goal</th>
+                <th className="text-start pb-3">Own Goal</th>
               </tr>
             </thead>
             <tbody>
-              {awayPlayers.map((player: any) => (
+              {awayPlayers.map((player) => (
                 <tr key={player.id}>
                   <td style={{ width: '300px' }}>{player.name}</td>
                   <td>
@@ -92,6 +171,11 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
                       type="number"
                       className="w-32 border rounded"
                       placeholder="Scored"
+                      value={awayGoals[player.id]}
+                      onChange={(e) => {
+                        const updatedGoals = { ...awayGoals, [player.id]: e.target.value };
+                        setAwayGoals(updatedGoals);
+                      }}
                     />
                   </td>
                   <td>
@@ -99,6 +183,11 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
                       type="number"
                       className="w-32 border rounded"
                       placeholder="Own Goal"
+                      value={awayOwnGoals[player.id]}
+                      onChange={(e) => {
+                        const updatedOwnGoals = { ...awayOwnGoals, [player.id]: e.target.value };
+                        setAwayOwnGoals(updatedOwnGoals);
+                      }}
                     />
                   </td>
                 </tr>
@@ -109,8 +198,11 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
         <div className="text-center mt-4">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={onClose}
+            onClick={handlePlayerStatsSubmit}
           >
+            Submit
+          </button>
+          <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={onClose}>
             Close
           </button>
         </div>

@@ -66,7 +66,7 @@ const Fixtures = () => {
         fixtureData.map((fixture:any) => (
           <div key={fixture.matchID}>
             <button
-              className="w-[200px] h-[100px] bg-green-300 text-gray-500 rounded-[20px] font-bold hover:bg-green-400"
+              className="w-[300px] h-[150px] bg-green-300 text-gray-500 rounded-[20px] font-bold hover:bg-green-400"
               onClick={() => handleOpenModal(fixture.matchID, teamNames[fixture.home], teamNames[fixture.away])}
             >
               Match:
