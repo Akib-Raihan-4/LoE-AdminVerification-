@@ -1,6 +1,7 @@
 "use client"
 import supabase from '@/config/supabase';
 import React, { useState, useEffect } from 'react';
+import ConfirmationModal from './confirmationModal';
 
 const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }: any) => {
 
@@ -18,6 +19,8 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
   const [awayTeamScore, setAwayTeamScore] = useState<any>(0);
 
   const [accumulatedGoals, setAccumulatedGoals] = useState<any>({ homeTeamGoals: 0, awayTeamGoals: 0 });
+
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
 
   useEffect(() => {
@@ -304,11 +307,11 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
     const { data, error } = await supabase
       .from('Fixture')
       .update({
-        homeGoal:homeTeamScore,
-        awayGoal:awayTeamScore
+        homeGoal: homeTeamScore,
+        awayGoal: awayTeamScore
       })
       .eq('matchID', matchID)
-    if(error){
+    if (error) {
       console.error('Error updating Fixture Match', error)
       return
     }
@@ -327,6 +330,23 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
   const handlePlayerStatsSubmit = () => {
     // console.log(homeGoals)
     // console.log(awayGoals)
+    // updatePlayerStats(homeGoals, homeOwnGoals);
+    // updatePlayerStats(awayGoals, awayOwnGoals);
+
+    // updateFixtureMatch(homeTeamScore, awayTeamScore)
+
+    // updateFinalMatchStats(homeTeamScore, awayTeamScore);
+
+    // onClose();
+    setShowConfirmationModal(true);
+
+  };
+
+  const handleCancel = () => {
+    setShowConfirmationModal(false);
+  };
+
+  const handleConfirm = () => {
     updatePlayerStats(homeGoals, homeOwnGoals);
     updatePlayerStats(awayGoals, awayOwnGoals);
 
@@ -334,6 +354,8 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
 
     updateFinalMatchStats(homeTeamScore, awayTeamScore);
 
+    setShowConfirmationModal(false);
+    
     onClose();
   };
 
@@ -450,6 +472,13 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
           </button>
         </div>
       </div>
+      {showConfirmationModal &&
+        <ConfirmationModal
+        isOpen={showConfirmationModal}
+        onConfirm= {handleConfirm}
+        onCancel = {handleCancel}
+        />
+      }
     </div>
   );
 
