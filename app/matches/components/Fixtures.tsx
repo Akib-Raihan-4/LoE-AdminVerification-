@@ -9,10 +9,12 @@ const Fixtures = () => {
   const [isModalOpen, setIsModalOpen] = useState<any>(false);
   const [selectedMatch, setSelectedMatch] = useState<any>({});
 
-  
+
   useEffect(() => {
     const fetchFixtureData = async () => {
-      const { data, error } = await supabase.from('Fixture').select('*');
+      const { data, error } = await supabase.from('Fixture')
+        .select('*')
+        .order('matchID', { ascending: true });
       if (error) {
         console.error('Unsuccessful to fetch data', error);
         return;
@@ -24,7 +26,7 @@ const Fixtures = () => {
 
 
   useEffect(() => {
-    const fetchTeamName = async (teamID:any) => {
+    const fetchTeamName = async (teamID: any) => {
       const { data, error } = await supabase.from('Team').select('teamName').eq('id', teamID);
       if (error) {
         console.error('Fetch error for teamName', error);
@@ -32,7 +34,7 @@ const Fixtures = () => {
       }
       if (data && data.length > 0) {
         const teamName = data[0].teamName;
-        setTeamNames((prevNames:any) => ({
+        setTeamNames((prevNames: any) => ({
           ...prevNames,
           [teamID]: teamName,
         }));
@@ -40,7 +42,7 @@ const Fixtures = () => {
     };
 
 
-    fixtureData.forEach((fixture:any) => {
+    fixtureData.forEach((fixture: any) => {
       const homeTeamID = fixture.home;
       const awayTeamID = fixture.away;
 
@@ -55,7 +57,7 @@ const Fixtures = () => {
   }, [fixtureData]);
 
 
-  const handleOpenModal = (matchID:any, homeTeamName:any, awayTeamName:any) => {
+  const handleOpenModal = (matchID: any, homeTeamName: any, awayTeamName: any) => {
     setSelectedMatch({ matchID, homeTeamName, awayTeamName });
     setIsModalOpen(true);
   };
@@ -67,9 +69,9 @@ const Fixtures = () => {
 
 
   return (
-    <div className="grid grid-cols-3 place-items-center mt-20">
+    <div className="grid grid-cols-3 place-items-center mt-20 gap-8">
       {fixtureData.length > 0 &&
-        fixtureData.map((fixture:any) => (
+        fixtureData.map((fixture: any) => (
           <div key={fixture.matchID}>
             <button
               className="w-[300px] h-[150px] bg-green-300 text-gray-500 rounded-[20px] font-bold hover:bg-green-400"
@@ -85,7 +87,11 @@ const Fixtures = () => {
           </div>
         ))}
       {isModalOpen && (
+        // <>
+        //   {console.log(selectedMatch.matchID)}
+        // </>
         <MatchInfoModal
+          matchID={selectedMatch.matchID}
           homeTeamName={selectedMatch.homeTeamName}
           awayTeamName={selectedMatch.awayTeamName}
           isOpen={isModalOpen}

@@ -2,9 +2,9 @@
 import supabase from '@/config/supabase';
 import React, { useState, useEffect } from 'react';
 
-const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) => {
+const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }: any) => {
 
-
+  // console.log(matchID)
   const [homePlayers, setHomePlayers] = useState([]);
   const [awayPlayers, setAwayPlayers] = useState([]);
 
@@ -16,6 +16,11 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
 
   const [homeTeamScore, setHomeTeamScore] = useState<any>(0);
   const [awayTeamScore, setAwayTeamScore] = useState<any>(0);
+
+  const [homeTeamGoals, setHomeTeamGoals] = useState<number>(0);
+  const [awayTeamGoals, setAwayTeamGoals] = useState<number>(0);
+
+  const [accumulatedGoals, setAccumulatedGoals] = useState<any>({ homeTeamGoals: 0, awayTeamGoals: 0 });
 
 
   useEffect(() => {
@@ -44,7 +49,41 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
 
 
   useEffect(() => {
+    const fetchInitialAccumulatedGoals = async () => {
+      const { data, error } = await supabase
+        .from('Fixture')
+        .select('homeGoal, awayGoal')
+        .eq('matchID', matchID)
+
+      if (error) {
+        console.error(`Error fetching initial accumulated goals:`, error);
+        return;
+      }
+
+      console.log(data)
+
+      const initialHomeGoals = data[0].homeGoal || 0;
+      const initialAwayGoals = data[0].awayGoal || 0;
+
+      setAccumulatedGoals({
+        homeTeamGoals: initialHomeGoals,
+        awayTeamGoals: initialAwayGoals,
+      });
+    };
+
+    if (homeTeamName && awayTeamName) {
+      fetchInitialAccumulatedGoals();
+    }
+  }, [homeTeamName, awayTeamName]);
+
+
+  useEffect(() => {
     const homeTeamGoals: any = Object.values(homeGoals).reduce(
+      (total: any, goal: any) => total + parseInt(goal || 0),
+      0
+    );
+
+    const awayTeamGoals: any = Object.values(awayGoals).reduce(
       (total: any, goal: any) => total + parseInt(goal || 0),
       0
     );
@@ -54,22 +93,18 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
       0
     );
 
-    const awayTeamGoals: any = Object.values(awayGoals).reduce(
-      (total: any, goal: any) => total + parseInt(goal || 0),
-      0
-    );
-
     const awayTeamOwnGoals: any = Object.values(awayOwnGoals).reduce(
       (total: any, ownGoal: any) => total + parseInt(ownGoal || 0),
       0
     );
 
-    const homeTeamFinalScore = homeTeamGoals + awayTeamOwnGoals;
-    const awayTeamFinalScore = awayTeamGoals + homeTeamOwnGoals;
+    const homeTeamFinalScore = accumulatedGoals.homeTeamGoals + homeTeamGoals + awayTeamOwnGoals;
+    const awayTeamFinalScore = accumulatedGoals.awayTeamGoals + awayTeamGoals + homeTeamOwnGoals;
 
     setHomeTeamScore(homeTeamFinalScore);
     setAwayTeamScore(awayTeamFinalScore);
-  }, [homeGoals, homeOwnGoals, awayGoals, awayOwnGoals]);
+
+  });
 
 
   const updatePlayerStats = async (goals: any, ownGoals: any) => {
@@ -119,8 +154,7 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
 
 
 
-
-  const updateMatchStats = async (homeTeamScore: any, awayTeamScore: any) => {
+  const updateFinalMatchStats = async (homeTeamScore: any, awayTeamScore: any) => {
 
     let homeTeamOutcome;
     let awayTeamOutcome;
@@ -268,6 +302,29 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
     }
   };
 
+  const updateFixtureMatch = async (homeTeamScore: any, awayTeamScore: any) => {
+
+    const { data, error } = await supabase
+      .from('Fixture')
+      .update({
+        homeGoal:homeTeamScore,
+        awayGoal:awayTeamScore
+      })
+      .eq('matchID', matchID)
+    if(error){
+      console.error('Error updating Fixture Match', error)
+      return
+    }
+  }
+
+
+  const handleMatchSubmit = () => {
+    updatePlayerStats(homeGoals, homeOwnGoals);
+    updatePlayerStats(awayGoals, awayOwnGoals);
+
+    updateFixtureMatch(homeTeamScore, awayTeamScore)
+
+  }
 
 
   const handlePlayerStatsSubmit = () => {
@@ -276,8 +333,9 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
     updatePlayerStats(homeGoals, homeOwnGoals);
     updatePlayerStats(awayGoals, awayOwnGoals);
 
+    updateFixtureMatch(homeTeamScore, awayTeamScore)
 
-    updateMatchStats(homeTeamScore, awayTeamScore);
+    updateFinalMatchStats(homeTeamScore, awayTeamScore);
 
     onClose();
   };
@@ -380,12 +438,18 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
         <div className="text-center mt-4 flex justify-evenly">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={handlePlayerStatsSubmit}
+            onClick={handleMatchSubmit}
           >
-            Submit
+            Match Updates
           </button>
           <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={onClose}>
             Close
+          </button>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={handlePlayerStatsSubmit}
+          >
+            Final Submit
           </button>
         </div>
       </div>
