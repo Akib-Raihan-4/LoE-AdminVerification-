@@ -434,7 +434,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
         </div>
         <div className="text-center mt-4 flex justify-evenly">
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-900"
             onClick={handleMatchSubmit}
           >
             Match Updates
