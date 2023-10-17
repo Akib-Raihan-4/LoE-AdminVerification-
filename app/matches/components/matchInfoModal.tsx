@@ -15,6 +15,10 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
   const [awayGoals, setAwayGoals] = useState<any>({});
   const [awayOwnGoals, setAwayOwnGoals] = useState<any>({});
 
+  const [homeAssists, setHomeAssists] = useState<any>({});
+  const [awayAssists, setAwayAssists] = useState<any>({});
+
+
   const [homeTeamScore, setHomeTeamScore] = useState<any>(0);
   const [awayTeamScore, setAwayTeamScore] = useState<any>(0);
 
@@ -27,7 +31,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
     const fetchPlayerData = async (teamName: any, setPlayers: any) => {
       const { data, error } = await supabase
         .from('PlayerTable')
-        .select('id, name, goal, ownGoal')
+        .select('id, name, goal, ownGoal, assist')
         .eq('teamName', teamName);
 
       if (error) {
@@ -107,34 +111,36 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
   });
 
 
-  const updatePlayerStats = async (goals: any, ownGoals: any) => {
-    const playerIds = Object.keys({ ...goals, ...ownGoals });
+  const updatePlayerStats = async (goals: any, ownGoals: any, assists: any) => {
+    const playerIds = Object.keys({ ...goals, ...ownGoals, ...assists});
     // console.log(playerIds)
 
     const updates = playerIds.map(async (playerId) => {
       const playerGoals = parseInt(goals[playerId] || 0);
       const playerOwnGoals = parseInt(ownGoals[playerId] || 0);
+      const playerAssists = parseInt(assists[playerId] || 0);
       const playerIdInt = parseInt(playerId);
 
       // console.log(playerGoals, playerId)
 
       const { data, error } = await supabase
         .from('PlayerTable')
-        .select('goal, ownGoal')
+        .select('goal, ownGoal, assist')
         .eq('id', playerIdInt);
 
       if (error) {
         console.error(`Error fetching player data for id ${playerIdInt}:`, error);
         return;
       }
-
+      // console.log(data[0])
       const currentGoals = data[0].goal;
-      console.log(data[0])
       const currentOwnGoals = data[0].ownGoal;
+      const currentAssists = data[0].assist;
       // console.log(currentOwnGoals)
 
       const updatedGoals = currentGoals + playerGoals;
       const updatedOwnGoals = currentOwnGoals + playerOwnGoals;
+      const updatedAssists = currentAssists + playerAssists;
       // console.log(updatedGoals)
 
       const { data: updateData, error: updateError } = await supabase
@@ -142,6 +148,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
         .update({
           goal: updatedGoals,
           ownGoal: updatedOwnGoals,
+          assist: updatedAssists,
         })
         .eq('id', playerIdInt);
 
@@ -319,8 +326,8 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
 
 
   const handleMatchSubmit = () => {
-    updatePlayerStats(homeGoals, homeOwnGoals);
-    updatePlayerStats(awayGoals, awayOwnGoals);
+    updatePlayerStats(homeGoals, homeOwnGoals, homeAssists);
+    updatePlayerStats(awayGoals, awayOwnGoals, awayAssists);
 
     updateFixtureMatch(homeTeamScore, awayTeamScore)
 
@@ -347,15 +354,15 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
   };
 
   const handleConfirm = () => {
-    updatePlayerStats(homeGoals, homeOwnGoals);
-    updatePlayerStats(awayGoals, awayOwnGoals);
+    updatePlayerStats(homeGoals, homeOwnGoals, homeAssists);
+    updatePlayerStats(awayGoals, awayOwnGoals, awayAssists);
 
     updateFixtureMatch(homeTeamScore, awayTeamScore)
 
     updateFinalMatchStats(homeTeamScore, awayTeamScore);
 
     setShowConfirmationModal(false);
-    
+
     onClose();
   };
 
@@ -374,8 +381,9 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
             <thead>
               <tr>
                 <th className="text-start pb-3">Player Name</th>
-                <th className="text-start pb-3">Goal</th>
-                <th className="text-start pb-3">Own Goal</th>
+                <th className="text-start pb-3">Goals</th>
+                <th className="text-start pb-3">Assists</th>
+                <th className="text-start pb-3">Own Goals</th>
               </tr>
             </thead>
             <tbody>
@@ -391,6 +399,18 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
                       onChange={(e) => {
                         const updatedGoals = { ...homeGoals, [player.id]: e.target.value };
                         setHomeGoals(updatedGoals);
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      className="w-32 border rounded"
+                      placeholder="Assists"
+                      value={homeAssists[player.id]}
+                      onChange={(e) => {
+                        const updatedAssists = { ...homeAssists, [player.id]: e.target.value };
+                        setHomeAssists(updatedAssists);
                       }}
                     />
                   </td>
@@ -418,6 +438,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
               <tr>
                 <th className="text-start pb-3">Player Name</th>
                 <th className="text-start pb-3">Goal</th>
+                <th className="text-start pb-3">Assists</th>
                 <th className="text-start pb-3">Own Goal</th>
               </tr>
             </thead>
@@ -434,6 +455,18 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
                       onChange={(e) => {
                         const updatedGoals = { ...awayGoals, [player.id]: e.target.value };
                         setAwayGoals(updatedGoals);
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      className="w-32 border rounded"
+                      placeholder="Assists"
+                      value={awayAssists[player.id]}
+                      onChange={(e) => {
+                        const updatedAssists = { ...awayAssists, [player.id]: e.target.value };
+                        setAwayAssists(updatedAssists);
                       }}
                     />
                   </td>
@@ -474,9 +507,9 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
       </div>
       {showConfirmationModal &&
         <ConfirmationModal
-        isOpen={showConfirmationModal}
-        onConfirm= {handleConfirm}
-        onCancel = {handleCancel}
+          isOpen={showConfirmationModal}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
         />
       }
     </div>
