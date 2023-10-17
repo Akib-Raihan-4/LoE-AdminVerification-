@@ -120,7 +120,7 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
               </tr>
             </thead>
             <tbody>
-              {homePlayers.map((player) => (
+              {homePlayers.map((player:any) => (
                 <tr key={player.id}>
                   <td style={{ width: '300px' }}>{player.name}</td>
                   <td>
@@ -163,7 +163,7 @@ const MatchInfoModal = ({ homeTeamName, awayTeamName, isOpen, onClose }: any) =>
               </tr>
             </thead>
             <tbody>
-              {awayPlayers.map((player) => (
+              {awayPlayers.map((player:any) => (
                 <tr key={player.id}>
                   <td style={{ width: '300px' }}>{player.name}</td>
                   <td>
