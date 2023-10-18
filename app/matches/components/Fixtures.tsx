@@ -69,7 +69,7 @@ const Fixtures = () => {
 
 
   return (
-    <div className="grid grid-cols-3 place-items-center mt-20 gap-8">
+    <div className="grid sm:grid-cols-3 place-items-center mt-20 gap-8">
       {fixtureData.length > 0 &&
         fixtureData.map((fixture: any) => (
           <div key={fixture.matchID}>
