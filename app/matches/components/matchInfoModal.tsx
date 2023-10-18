@@ -112,7 +112,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
 
 
   const updatePlayerStats = async (goals: any, ownGoals: any, assists: any) => {
-    const playerIds = Object.keys({ ...goals, ...ownGoals, ...assists});
+    const playerIds = Object.keys({ ...goals, ...ownGoals, ...assists });
     // console.log(playerIds)
 
     const updates = playerIds.map(async (playerId) => {
@@ -368,133 +368,130 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
 
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-opacity-80 bg-gray-900 ${isOpen ? 'block' : 'hidden'
-        }`}
-    >
-      <div className="bg-white p-4 rounded-lg shadow-md w-full md:w-3/4 lg:w-1/2">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-opacity-80 bg-gray-900 ${isOpen ? 'block' : 'hidden'}`}>
+      <div className="bg-white p-4 rounded-lg shadow-md w-full sm:w-5/6 md:w-4/5 lg:w-3/5 xl:w-2/5">
         <h2 className="text-2xl font-bold mb-4 text-center">Match Info</h2>
-        <p className="text-xl font-bold text-center" >{homeTeamName} <span className='text-yellow-500'>{homeTeamScore}</span>  : <span className='text-yellow-500'>{awayTeamScore}</span> {awayTeamName}</p>
+        <p className="text-xl font-bold text-center">{homeTeamName} <span className="text-yellow-500">{homeTeamScore}</span> : <span className="text-yellow-500">{awayTeamScore}</span> {awayTeamName}</p>
         <div className="mb-4">
-          <h3 className="text-lg font-semibold my-10 text-center">{homeTeamName} Players</h3>
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th className="text-start pb-3">Player Name</th>
-                <th className="text-start pb-3">Goals</th>
-                <th className="text-start pb-3">Assists</th>
-                <th className="text-start pb-3">Own Goals</th>
-              </tr>
-            </thead>
-            <tbody>
-              {homePlayers.map((player: any) => (
-                <tr key={player.id}>
-                  <td style={{ width: '300px' }}>{player.name}</td>
-                  <td>
-                    <input
-                      type="number"
-                      className="w-32 border rounded"
-                      placeholder="Scored"
-                      value={homeGoals[player.id]}
-                      onChange={(e) => {
-                        const updatedGoals = { ...homeGoals, [player.id]: e.target.value };
-                        setHomeGoals(updatedGoals);
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="w-32 border rounded"
-                      placeholder="Assists"
-                      value={homeAssists[player.id]}
-                      onChange={(e) => {
-                        const updatedAssists = { ...homeAssists, [player.id]: e.target.value };
-                        setHomeAssists(updatedAssists);
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="w-32 border rounded"
-                      placeholder="Own Goal"
-                      value={homeOwnGoals[player.id]}
-                      onChange={(e) => {
-                        const updatedOwnGoals = { ...homeOwnGoals, [player.id]: e.target.value };
-                        setHomeOwnGoals(updatedOwnGoals);
-                      }}
-                    />
-                  </td>
+          <h3 className="text-lg font-semibold my-4 text-center">{homeTeamName} Players</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto">
+              <thead>
+                <tr>
+                  <th className="text-start pb-3">Player Name</th>
+                  <th className="text-start pb-3">Goals</th>
+                  <th className="text-start pb-3">Assists</th>
+                  <th className="text-start pb-3">Own Goals</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {homePlayers.map((player: any) => (
+                  <tr key={player.id}>
+                    <td className="w-full sm:w-1/2 md:w-1/5 lg:w-1/6 xl:w-1/6">{player.name}</td>
+                    <td className="w-1/2 sm:w-1/2 md:w-1/8 lg:w-1/8 xl:w-1/8">
+                      <input
+                        type="number"
+                        className="w-20 sm:w-24 md:w-32 border rounded"
+                        placeholder="Scored"
+                        value={homeGoals[player.id]}
+                        onChange={(e) => {
+                          const updatedGoals = { ...homeGoals, [player.id]: e.target.value };
+                          setHomeGoals(updatedGoals);
+                        }}
+                      />
+                    </td>
+                    <td className="w-1/2 sm:w-1/2 md:w-1/8 lg:w-1/8 xl:w-1/8">
+                      <input
+                        type="number"
+                        className="w-20 sm:w-24 md:w-32 border rounded"
+                        placeholder="Assists"
+                        value={homeAssists[player.id]}
+                        onChange={(e) => {
+                          const updatedAssists = { ...homeAssists, [player.id]: e.target.value };
+                          setHomeAssists(updatedAssists);
+                        }} />
+                    </td>
+                    <td className="w-1/2 sm:w-1/2 md:w-1/8 lg:w-1/8 xl:w-1/8">
+                      <input
+                        type="number"
+                        className="w-20 sm:w-24 md:w-32 border rounded"
+                        placeholder="Own Goal"
+                        value={homeOwnGoals[player.id]}
+                        onChange={(e) => {
+                          const updatedOwnGoals = { ...homeOwnGoals, [player.id]: e.target.value };
+                          setHomeOwnGoals(updatedOwnGoals);
+                        }} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
         <div>
-          <h3 className="text-lg font-semibold my-10 text-center">{awayTeamName} Players</h3>
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th className="text-start pb-3">Player Name</th>
-                <th className="text-start pb-3">Goal</th>
-                <th className="text-start pb-3">Assists</th>
-                <th className="text-start pb-3">Own Goal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {awayPlayers.map((player: any) => (
-                <tr key={player.id}>
-                  <td style={{ width: '300px' }}>{player.name}</td>
-                  <td>
-                    <input
-                      type="number"
-                      className="w-32 border rounded"
-                      placeholder="Scored"
-                      value={awayGoals[player.id]}
-                      onChange={(e) => {
-                        const updatedGoals = { ...awayGoals, [player.id]: e.target.value };
-                        setAwayGoals(updatedGoals);
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="w-32 border rounded"
-                      placeholder="Assists"
-                      value={awayAssists[player.id]}
-                      onChange={(e) => {
-                        const updatedAssists = { ...awayAssists, [player.id]: e.target.value };
-                        setAwayAssists(updatedAssists);
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="w-32 border rounded"
-                      placeholder="Own Goal"
-                      value={awayOwnGoals[player.id]}
-                      onChange={(e) => {
-                        const updatedOwnGoals = { ...awayOwnGoals, [player.id]: e.target.value };
-                        setAwayOwnGoals(updatedOwnGoals);
-                      }}
-                    />
-                  </td>
+          <h3 className="text-lg font-semibold my-4 text-center">{awayTeamName} Players</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto">
+              <thead>
+                <tr>
+                  <th className="text-start pb-3">Player Name</th>
+                  <th className="text-start pb-3">Goals</th>
+                  <th className="text-start pb-3">Assists</th>
+                  <th className="text-start pb-3">Own Goals</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {awayPlayers.map((player: any) => (
+                  <tr key={player.id}>
+                    <td className="w-full sm:w-1/2 md:w-1/5 lg:w-1/6 xl:w-1/6">{player.name}</td>
+                    <td className="w-1/2 sm:w-1/2 md:w-1/8 lg:w-1/8 xl:w-1/8">
+                      <input
+                        type="number"
+                        className="w-20 sm:w-24 md:w-32 border rounded"
+                        placeholder="Scored"
+                        value={awayGoals[player.id]}
+                        onChange={(e) => {
+                          const updatedGoals = { ...awayGoals, [player.id]: e.target.value };
+                          setAwayGoals(updatedGoals);
+                        }}
+                      />
+                    </td>
+                    <td className="w-1/2 sm:w-1/2 md:w-1/8 lg:w-1/8 xl:w-1/8">
+                      <input
+                        type="number"
+                        className="w-20 sm:w-24 md:w-32 border rounded"
+                        placeholder="Assists"
+                        value={awayAssists[player.id]}
+                        onChange={(e) => {
+                          const updatedAssists = { ...awayAssists, [player.id]: e.target.value };
+                          setAwayAssists(updatedAssists);
+                        }} />
+                    </td>
+                    <td className="w-1/2 sm:w-1/2 md:w-1/8 lg:w-1/8 xl:w-1/8">
+                      <input
+                        type="number"
+                        className="w-20 sm:w-24 md:w-32 border rounded"
+                        placeholder="Own Goal"
+                        value={awayOwnGoals[player.id]}
+                        onChange={(e) => {
+                          const updatedOwnGoals = { ...awayOwnGoals, [player.id]: e.target.value };
+                          setAwayOwnGoals(updatedOwnGoals);
+                        }} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div className="text-center mt-4 flex justify-evenly">
+        <div className="text-center mt-4 flex flex-col md:flex-row justify-evenly">
           <button
-            className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-900"
+            className="bg-gray-700 text-white px-4 py-2 rounded mb-2 sm:mb-0 md:mb-0 md:mr-2 hover:bg-gray-900"
             onClick={handleMatchSubmit}
           >
             Match Updates
           </button>
-          <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={onClose}>
+          <button className="bg-red-500 text-white px-4 py-2 rounded mb-2 sm:mb-0 md:mb-0 md:mr-2 hover:bg-red-600" onClick={onClose}>
             Close
           </button>
           <button
@@ -513,6 +510,8 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
         />
       }
     </div>
+
+
   );
 
 };
