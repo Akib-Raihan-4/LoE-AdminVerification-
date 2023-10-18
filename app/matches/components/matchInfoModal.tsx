@@ -34,7 +34,8 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
       const { data, error } = await supabase
         .from('PlayerTable')
         .select('id, name, goal, ownGoal, assist')
-        .eq('teamName', teamName);
+        .eq('teamName', teamName)
+        .order('id', { ascending: true });
 
       if (error) {
         console.log(`Error fetching player data for ${teamName}`, error);
