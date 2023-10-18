@@ -28,6 +28,8 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
+  const [matchUpdateModal, setMatchUpdateModal] = useState(false)
+
 
   useEffect(() => {
     const fetchPlayerData = async (teamName: any, setPlayers: any) => {
@@ -329,10 +331,11 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
 
 
   const handleMatchSubmit = () => {
-    updatePlayerStats(homeGoals, homeOwnGoals, homeAssists);
-    updatePlayerStats(awayGoals, awayOwnGoals, awayAssists);
+    // updatePlayerStats(homeGoals, homeOwnGoals, homeAssists);
+    // updatePlayerStats(awayGoals, awayOwnGoals, awayAssists);
 
-    updateFixtureMatch(homeTeamScore, awayTeamScore)
+    // updateFixtureMatch(homeTeamScore, awayTeamScore)
+    setMatchUpdateModal(true);
 
   }
 
@@ -354,6 +357,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
 
   const handleCancel = () => {
     setShowConfirmationModal(false);
+    setMatchUpdateModal(false)
   };
 
   const handleConfirm = () => {
@@ -368,6 +372,16 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
 
     onClose();
   };
+
+  const handleMatchUpdates = () => {
+    updatePlayerStats(homeGoals, homeOwnGoals, homeAssists);
+    updatePlayerStats(awayGoals, awayOwnGoals, awayAssists);
+
+    updateFixtureMatch(homeTeamScore, awayTeamScore)
+    
+    setMatchUpdateModal(false)
+    onClose();
+  }
 
 
   return (
@@ -512,6 +526,14 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
         <ConfirmationModal
           isOpen={showConfirmationModal}
           onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      }
+
+      {matchUpdateModal &&
+        <ConfirmationModal
+          isOpen={matchUpdateModal}
+          onConfirm={handleMatchUpdates}
           onCancel={handleCancel}
         />
       }

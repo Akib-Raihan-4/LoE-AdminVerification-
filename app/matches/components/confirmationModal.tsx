@@ -10,7 +10,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel }:any) => {
       <div className="bg-white p-4 rounded-lg shadow-md w-full md:w-3/4 lg:w-1/2">
         <h2 className="text-2xl font-bold mb-4 text-center">Confirmation</h2>
         <p className="text-lg text-center">
-          Are you sure you want to make the final submission?
+          Are you sure you about the updates ? Think TWICE.
         </p>
         <div className="text-center mt-4 flex justify-evenly">
           <button
