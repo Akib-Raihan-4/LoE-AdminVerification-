@@ -3,6 +3,8 @@ import supabase from '@/config/supabase';
 import React, { useState, useEffect } from 'react';
 import ConfirmationModal from './confirmationModal';
 
+import './matchInfoTable.css'
+
 const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }: any) => {
 
   // console.log(matchID)
@@ -376,11 +378,11 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
         <h2 className="text-2xl font-bold mb-4 text-center">Match Info</h2>
         <p className="text-xl font-bold text-center" >{homeTeamName} <span className='text-yellow-500'>{homeTeamScore}</span>  : <span className='text-yellow-500'>{awayTeamScore}</span> {awayTeamName}</p>
         <div className="mb-4">
-          <h3 className="text-lg font-semibold my-10 text-center">{homeTeamName} Players</h3>
-          <table className="w-1/2">
+          <h3 className="text-lg font-semibold my-10 text-center"> <span className='text-amber-400'>{homeTeamName}</span> Players</h3>
+          <table className="w-full">
             <thead>
               <tr>
-                <th className="text-start pb-3">Player Name</th>
+                <th className="text-start pb-3 ">Player Name</th>
                 <th className="text-start pb-3">Goals</th>
                 <th className="text-start pb-3">Assists</th>
                 <th className="text-start pb-3">Own Goals</th>
@@ -393,7 +395,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
                   <td>
                     <input
                       type="number"
-                      className="w-32 border rounded"
+                      className="sm:w-32 w-full border rounded mt-2 border-gray-900"
                       placeholder="Scored"
                       value={homeGoals[player.id]}
                       onChange={(e) => {
@@ -405,7 +407,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
                   <td>
                     <input
                       type="number"
-                      className="w-32 border rounded"
+                      className="sm:w-32 w-full border rounded mt-2 border-gray-900"
                       placeholder="Assists"
                       value={homeAssists[player.id]}
                       onChange={(e) => {
@@ -417,7 +419,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
                   <td>
                     <input
                       type="number"
-                      className="w-32 border rounded"
+                      className="sm:w-32 w-full border rounded mt-2 border-gray-900"
                       placeholder="Own Goal"
                       value={homeOwnGoals[player.id]}
                       onChange={(e) => {
@@ -432,7 +434,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
           </table>
         </div>
         <div>
-          <h3 className="text-lg font-semibold my-10 text-center">{awayTeamName} Players</h3>
+          <h3 className="text-lg font-semibold my-10 text-center"><span className='text-amber-400'>{awayTeamName}</span>  Players</h3>
           <table className="w-full">
             <thead>
               <tr>
@@ -449,7 +451,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
                   <td>
                     <input
                       type="number"
-                      className="w-32 border rounded"
+                      className="sm:w-32 w-full border rounded mt-2 border-gray-900"
                       placeholder="Scored"
                       value={awayGoals[player.id]}
                       onChange={(e) => {
@@ -461,7 +463,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
                   <td>
                     <input
                       type="number"
-                      className="w-32 border rounded"
+                      className="sm:w-32 w-full border rounded mt-2 border-gray-900"
                       placeholder="Assists"
                       value={awayAssists[player.id]}
                       onChange={(e) => {
@@ -473,7 +475,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
                   <td>
                     <input
                       type="number"
-                      className="w-32 border rounded"
+                      className="sm:w-32 w-full border rounded mt-2 border-gray-900"
                       placeholder="Own Goal"
                       value={awayOwnGoals[player.id]}
                       onChange={(e) => {
@@ -487,7 +489,7 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
             </tbody>
           </table>
         </div>
-        <div className="text-center mt-4 flex justify-evenly">
+        <div className="text-center mt-4 sm:flex justify-evenly">
           <button
             className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-900"
             onClick={handleMatchSubmit}
