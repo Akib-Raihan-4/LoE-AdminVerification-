@@ -312,6 +312,13 @@ const MatchInfoModal = ({ matchID, homeTeamName, awayTeamName, isOpen, onClose }
       console.error(`Error updating away team stats:`, awayUpdateError);
       return;
     }
+
+    const {data: fixtureUpdate, error: fixtureError} = await supabase
+      .from('Fixture')
+      .update({
+        played: "TRUE"
+      })
+      .eq('matchID', matchID)
   };
 
   const updateFixtureMatch = async (homeTeamScore: any, awayTeamScore: any) => {

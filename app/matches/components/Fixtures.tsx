@@ -71,21 +71,21 @@ const Fixtures = () => {
   return (
     <div className="grid sm:grid-cols-3 place-items-center sm:mt-20 my-10 gap-8">
       {fixtureData.length > 0 &&
-        fixtureData.map((fixture: any) => (
+        fixtureData.map((fixture:any) => (
           <div key={fixture.matchID}>
             <button
-              className="w-[300px] h-[150px] bg-green-300 text-gray-500 rounded-[20px] font-bold hover:bg-green-400"
+              className={`w-[300px] h-[150px] font-bold  ${fixture.played ? 'bg-red-300 text-gray-800' : 'bg-green-300 text-gray-500 hover:bg-green-400'
+                } rounded-[20px]`}
               onClick={() => handleOpenModal(fixture.matchID, teamNames[fixture.home], teamNames[fixture.away])}
             >
               Match:
-              <span className="text-green-950 text-lg font-bold">
-                {` ${fixture.matchID}`}
-              </span>
+              <span className="text-green-950 text-lg font-bold">{` ${fixture.matchID}`}</span>
               <br />
               {teamNames[fixture.home]} <span className="font-extrabold text-gray-600">VS</span> {teamNames[fixture.away]}
             </button>
           </div>
         ))}
+
       {isModalOpen && (
         // <>
         //   {console.log(selectedMatch.matchID)}
